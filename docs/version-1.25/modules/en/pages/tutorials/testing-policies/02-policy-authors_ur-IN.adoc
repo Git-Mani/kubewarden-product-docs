@@ -1,0 +1,85 @@
+ٹیسٹ لیس auteurs کے ڈی politiques :revdate:2025-06-03 :page-revdate: :description:pour pour, politiques کے Kubewarden pour, politiques. :doc-persona: \["kubuwarden-policy-developer"]  \["Testing-Policy-Writers:doc-type:"] \["سبق آموز"]  \["kubwarden", "political :keywords:testing", "political :doc-topic:author", "rouille", "جاؤ"، "اسمبل اسکرپٹ"، "ترقی کا ماحول") :sidebar_label:auteurs ڈی ریگلز :current-version:(صفحہ اصل شاخ)
+
+لیس پولیٹکس Kubewarden Sont Des Programs ریگویئرس مرتب کرتی ہے Sous Forme de WebAssembly (Wasm). Comme کے ٹور کی قسم ڈی پروگرام، ایک بون سوورچر ڈی ٹیسٹ EST درآمد.
+
+لیس auteurs کے ڈی strategies کے peuvent کے استعمال leurs کے ماحول ڈی developpement preferes. Vous pouvez استعمال بیرونی familiers اور ڈیس فریم ورک ٹیسٹ کے ڈالا ویریفائر لی developpement.
+
+CES regles Kubewarden sont des exemples elecrits dans xref: سبق / تحریری پالیسیاں / مورچا / 01-انٹرو-Rust.adoc[Rust] et xref: سبق / تحریری پالیسیاں / GO/01-intro-go.adoc [GO]&nbsp; :
+
+* https://github.com/kubewarden/psp-apparmor\[psp-apparmor]
+* https://github.com/kubewarden/ingress-policy\[ingress-policy]
+
+Ils ڈسپوزنٹ ڈی سوٹ ٹیسٹ کے استعمال معیاری نچوڑ دالوں کے ماحول کے ٹیسٹ.
+
+Les politiques استعمال کے اعمال GitHub کے دباؤ پائپ لائنز سی آئی ڈال.
+
+ٹیسٹ BOOT اور BOOT
+
+Vous pouvez کے اخترتی qui s'excute sur le binaire Wasm contenant votre strategie ٹیسٹ کا اعلان. سی ای میلوں سے گریز کرتا ہے à deployer اقوام متحدہ کلسٹر Kubernetes، vous pouvez استعمال Ces outils&nbsp;:
+
+* https://github.com/bats-core/bats-core[bats]: EST&nbsp;: EST D'Criree DESS Tests ET'Automatizer leur Excution.
+* https://github.com/kubewarden/kwctl\[) :`kwctl`&nbsp; Outil CLI برابر DEFAUT DE Kubiwarden qui vous AVEC AVEC ES اوپیریشن aux strategies:&nbsp;exraire, انسپکٹر, annoter, poussser, et courrez.
+
+کا استعمال کرتے ہوئے`kwctl run`، vous avez besoin des elements suivants کے&nbsp;:
+
+. Reference du fichier binaire Wasm de la strategie à excuter. لا strategie Kubewarden موٹا à چارگی être جزوی ڈی&nbsp;: Le systeme de fhiers local (`file://`) اقوام متحدہ کی خدمت HTTP (ے) ((`https://`اقوام متحدہ کے رجسٹرار OCI`registry://`). . Objet de demande d'admission à tester.ڈیمنڈ ڈی ڈیمنڈے ڈی داخلہ ایل کی دلیل کے ذریعے Vous le Donnez`--request-path`, Ou on `stdin` en definissant `--request-path` sur`-`. . لیس پیرامیٹرز ڈی سٹرٹیجی ڈالا L'excution اور tant que JSON en ligne کے ذریعے `--settings-json` drapeau. Ou اقوام متحدہ fichier JSON، OU YAML، چارگی à partir du systeme de fhiers کی طرف سے`--settings-path`.
+
+Apres لی ٹیسٹ`kwctl`، imprime L'`ValidationResponse`objet سور لا sortie معیار.
+
+Voici تبصرہ vous uffezez `kwctl` ڈالا le binaire Wasm du https://github.com/kubewarden/ingress-policy\[`ingress-policy`] ذکر precedemment&nbsp;:
+
+\[subs کے" اوصاف"، کنسول]
+---
+
+$ Curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2\[/Dev/null|  
+kwctl run  
+\-- ترتیبات-JSON '["الاؤٹ پورٹس"&nbsp;]: [80], «&nbsp;denyPorts&nbsp;»&nbsp;: [3000]'  
+\- درخواست کا راستہ \-  
+رجسٹر کریں&nbsp;:///ghcr.io / kubwarden / پالیسیاں / داخلہ: v0.1.8| jq
+---
+
+Vous pouvez telecharger لیس Binaires Pre-construits de `kwctl` https://github.com/kubewarden/kwctl/releases[here].
+
+En استعمال `bats` vous pouvez وضاحت اقوام متحدہ کے ٹیسٹ qui excute cette commande et recherche les sorties attendues&nbsp;:
+
+ایک ٹیسٹ chauves-souris
+
+\[%compressible]
+===
+
+\[، باش]
+---
+
+@test "Tout va bien" (run kwctl run  
+ \--request-path test_data/intross-wildcard.JSON  
+ \--settings-JSON'["الاؤنس"&nbsp;] : [80], «&nbsp;denyPorts&nbsp;»&nbsp;: [3000] ۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔  
+
+
+# ceci imprime la sortie lortie l'une des verifications ci-dessous echoue
+
+ECO «&nbsp;پیداوار&nbsp; » $ [پیداوار]
+
+# پیرامیٹرز کی توثیق کی توثیق
+
+[[[[[$ پیداوار *&nbsp;*] "*درست : سچ"*]]]
+
+# ڈیمنڈ قبول کریں
+
+["PK"*&nbsp;*] [*Published*] [*Published*]
+
+.
+---
+
+(متعدی
+
+Vous pouvez Placer le code dans اقوام متحدہ fhier`e2e.bats`, برابر مثال, puis انوائس `bats` برابر&nbsp;:
+
+[subs کے" اوصاف"، کنسول]
+---
+
+$ bats e2e.bats ✓ tout EST بون
+
+1 ٹیسٹ ، 0 ٹیسٹ
+---
+
+xref: سبق / تحریری پالیسیاں / GO / 05-E2E-Tests.adoc [cette] سیکشن ڈی لا دستاویزات contient کے علاوہ D'informations sur l'criture de tests de bout de vos strategies.
