@@ -11,7 +11,7 @@ CES règles Kubewarden sont des exemples écrits dans xref:tutorials/writing-pol
 
 ILS disposent de Suites de tests utilizant des test standard pour leurs Environnements de développement.
 
-Les politiques utilizent des actions GitHub pour leurs pipeline ci.
+Les politiques utilizent des Actions GitHub pour leurs pipeline ci.
 
 == test de bout en bout
 
@@ -31,10 +31,10 @@ Voici comment vous utilizez `kwctl` pour tester le binaire Wasm du https://githu
 \[subs="+attributi",console]
 ---
 
-$ curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2> /dev/null |  
-kwctl run  
-\--settings-JSON '{"allowPorts"&nbsp;: [80], «&nbsp;denyPorts&nbsp;»&nbsp;: [3000]}'  
-\--request-path -  
+$ curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2> /dev/null |  
+kwctl run  
+\--settings-JSON '{"allowPorts"&nbsp;: [80], «&nbsp;denyPorts&nbsp;»&nbsp;: [3000]}'  
+\--request-path -  
 register&nbsp;://ghcr.io/kubewarden/policies/ingress:v0.1.8 | jq
 ---
 
@@ -63,7 +63,7 @@ echo «&nbsp;output = ${output}&nbsp;»
 
 [\[ "$output" == *"valido&nbsp;: vero"* ]]
 
-# chiedete accettato
+# chiedete accettata
 
 [\[ "$output" == *"consentito&nbsp;: vero"* ]]
 
@@ -82,4 +82,4 @@ $ bats e2e.bats ✓ tout est bon
 1 test, 0 échecs
 ---
 
-Xref:tutorials/writing-policies/go/05-e2e-Tests.adoc[cette] section de la documentation contient Plus d'Information sur l'écriture de tests de bout en bout de vos stratégies.
+Xref:tutorials/writing-policies/go/05-e2e-tests.adoc[cette] section de la documentation contient Plus d'Information sur l'écriture de tests de bout en bout de vos stratégies.
