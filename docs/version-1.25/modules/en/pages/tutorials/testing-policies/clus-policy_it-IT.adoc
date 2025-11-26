@@ -1,0 +1,10 @@
+= dati sui test delle policy :revdate:2025-05-09 :page-revdate: {revdate} :description: Un tutorial sui test delle policy in Kubewarden. :doc-persona: ["kubewarden-operator", "kubewarden-policy-developer"] :doc-topic: ["testing-policies", "introduzione"] :doc-type: ["tutorial"] :keywords: ["kubewarden", "persone", "autore della politica", "cluster operator"] :sidebar_label:test criteri :current-version:{page-origin-Branch}
+
+== personale addetto ai test delle policy
+
+Questa sezione tratta l'argomento del test delle politiche di Kubewarden. Esistono due persone interessate ai criteri di test:
+
+* *Sviluppatore di policy* : stai scrivendo una policy Kubewarden e vuoi assicurarti che il tuo codice si comporti come ti aspetti.
+* *Gestore cluster* : è stato trovato un criterio Kubewarden e si desidera testare e regolare le impostazioni dei criteri prima di distribuirlo. Si desidera continuare a testare queste impostazioni nelle pipeline ci/CD e in altre attività amministrative.
+
+Le sezioni successive della documentazione mostrano come queste persone possono testare le politiche di Kubewarden.
