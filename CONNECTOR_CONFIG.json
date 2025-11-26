@@ -1,0 +1,11 @@
+{
+  "projectTemplateConfig": {
+    "projectTemplateId": "66d032acb5b0890682324832",
+    "targetLanguage": "it-IT,pt-BR",
+    "projectNamePattern": "testing project override "
+  },
+
+  "fileExtensions": {
+    "include": [".xml", ".txt"]
+  }
+}
