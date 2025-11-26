@@ -1,10 +1,10 @@
-= Policy Testing Data :revdate: 2025 09.05.2009 :page-revdate: {revdate} :description: Ein Tutorial zum Testen von Richtlinien in Kubewarden. :doc-persona: ["kubewarden-Operator", "kubewarden-Policy-Developer"] :doc-topic: ["Testing-Policies", "Einführung"] :doc-type:\["Tutorial"]  \[":keywords:kubewarden", "Personen", "Policy Author", „Cluster Operator“] :sidebar_label: Policy-Test :current-version: {page-origin-Branch}
+= dati sui test delle policy :revdate:2025-05-09 :page-revdate: {revdate} :description: Un tutorial sui test delle policy in Kubewarden. :doc-persona: ["kubewarden-operator", "kubewarden-policy-developer"] :doc-topic: ["testing-policies", "introduzione"] :doc-type: ["tutorial"] :keywords: ["kubewarden", "persone", "autore della politica", "cluster operator"] :sidebar_label:test criteri :current-version:{page-origin-Branch}
 
-== Personas zum Testen von Richtlinien
+== personale addetto ai test delle policy
 
-In diesem Abschnitt wird das Thema Testen von Kubewarden Richtlinien behandelt. Es gibt zwei Personen, die sich für das Testen von Richtlinien interessieren:
+Questa sezione tratta l'argomento del test delle politiche di Kubewarden. Esistono due persone interessate ai criteri di test:
 
-* *Richtlinienentwickler*: Sie schreiben eine Kubewarden-Richtlinie und möchten sicherstellen, dass Ihr Code sich wie erwartet verhält.
-* *Cluster Operator*: Sie haben eine Kubewarden Policy gefunden und möchten die Richtlinieneinstellungen vor der Bereitstellung testen und optimieren. Sie möchten diese Einstellungen weiterhin in Ihren CI/CD-Pipelines und anderen administrativen Aufgaben testen.
+* *Sviluppatore di policy* : stai scrivendo una policy Kubewarden e vuoi assicurarti che il tuo codice si comporti come ti aspetti.
+* *Gestore cluster* : è stato trovato un criterio Kubewarden e si desidera testare e regolare le impostazioni dei criteri prima di distribuirlo. Si desidera continuare a testare queste impostazioni nelle pipeline ci/CD e in altre attività amministrative.
 
-Die nächsten Abschnitte der Dokumentation zeigen, wie diese Personas Kubewarden Richtlinien testen können.
+Le sezioni successive della documentazione mostrano come queste persone possono testare le politiche di Kubewarden.
