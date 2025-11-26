@@ -1,10 +1,10 @@
-= test des politiques :revdate:2025-05-09 :page-revdate: {revdate} :description: Un tutoriel sur le test des politiques dans Kubewarden. :doc-persona: ["kubewarden-operator", "kubewarden-policy-developer"] :doc-topic: ["testing-policies", "introduction"] :doc-type: ["tutoriel"] :keywords: ["kubewarden", "persons", "policy author", «&nbsp;cluster operator&nbsp;»] :sidebar_label:test de règle :current-version:{page-origin-branch}
+= Policy testing :revdate: 2025-05-09 :page-revdate: {revdate} :description: A tutorial about testing policies in Kubewarden. :doc-persona: ["kubewarden-operator", "kubewarden-policy-developer"] :doc-topic: ["testing-policies", "introduction"] :doc-type: ["tutorial"] :keywords: ["kubewarden", "persons", "policy author", "cluster operator"] :sidebar_label: Policy testing :current-version: {page-origin-branch}
 
-== personas de test de règles
+== Policy testing personas
 
-Cette section traite du test des politiques Kubewarden. Il y a deux personas intéressés par les politiques de test&nbsp;:
+This section covers the topic of testing Kubewarden Policies. There are two personas interested in testing policies:
 
-* *Développeur de politiques*&nbsp;: vous écrivez une politique Kubewarden et vous voulez vous assurer que votre code se comporte comme vous l'attendez.
-* *Opérateur de cluster*&nbsp;: vous avez trouvé une stratégie Kubewarden et vous souhaitez tester et ajuster les paramètres de stratégie avant de la déployer. Vous souhaitez continuer à tester ces paramètres dans vos pipelines ci/CD, ainsi que dans d'autres tâches administratives.
+* *Policy developer*: you're writing a Kubewarden Policy and you want to make sure your code behaves the way you expect.
+* *Cluster operator*: you found a Kubewarden Policy and you want to test and tune the policy settings before deploying it. You want to keep testing these settings in your CI/CD pipelines, and other administrative tasks.
 
-Les sections suivantes de la documentation montrent comment ces personas peuvent tester les stratégies Kubewarden.
+The next sections of the documentation shows how these personas can test Kubewarden policies.
