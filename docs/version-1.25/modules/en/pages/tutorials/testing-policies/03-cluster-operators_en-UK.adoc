@@ -1,17 +1,17 @@
-کلسٹر آپریٹرز کے لئے ٹیسٹنگ 2025-05-09 :page-revdate: :description:کلسٹر آپریٹرز کے :revdate:لئے Kubwarden پالیسیوں کی جانچ کرنے کے لئے ایک تعارف. :doc-persona: \["kubuwarden-policy-developer:doc-topic:"] \["testing-policies:doc-type:", "tutorial:keywords:"] ["kubwarden", "kubernetes", "کلسٹر آپریٹرز", "testing"] کلسٹر آپریٹرز :current-version: \[صفحہ اصل شاخ]:sidebar_label:
+کلسٹر آپریٹرز کے لئے ٹیسٹنگ 2025-05-09 :page-revdate: :description:کلسٹر آپریٹرز کے :revdate:لئے Kubwarden پالیسیوں کی جانچ کرنے کے لئے ایک تعارف. :doc-persona: \["kubuwarden-policy-developer:doc-topic:"] \["testing-policy:doc-type:", "tutoriel:keywords:"] ["kubwarden", "kubernetes", "کلسٹر آپریٹرز", "testing"] کلسٹر آپریٹرز :current-version: \[صفحہ اصل شاخ]:sidebar_label:
 
 Kubernetes کلسٹر آپریٹر کے طور پر، آپ کو Kubwarden پالیسیوں کے لئے جانچ کرنا چاہتے ہیں جو آپ استعمال کرنا چاہتے ہیں.
 
-آپ کے پاس سوالات ہیں جیسے:
+آپ کے پاس سوالات ہیں جیسے&nbsp;:
 
 * درست پالیسی کی ترتیبات کیا ہیں جو توثیق / تبدیلی کے نتائج کو حاصل کرنے کے لئے ضروری ہیں؟
-* میں کیسے یقین کر سکتا ہوں کہ سب کچھ میری توقع کے مطابق کام کرتا رہتا ہے جب: کیا آپ اس پالیسی کو کسی نئے ورژن میں اپ گریڈ کرسکتے ہیں؟ (1) کوبرنیٹ وسائل کو شامل کریں / تبدیل کریں؟ (3) پالیسی کے پیرامیٹرز کو تبدیل کریں؟ (اور اس طرح؟)
+* میں کیسے یقین کر سکتا ہوں کہ سب کچھ میری توقع کے مطابق کام کرتا رہتا ہے جب&nbsp;: کیا آپ اس پالیسی کو کسی نئے ورژن میں اپ گریڈ کرسکتے ہیں؟ (1) کوبرنیٹ وسائل کو شامل کریں / تبدیل کریں؟ (3) پالیسی کے پیرامیٹرز کو تبدیل کریں؟ (اور اس طرح؟)
 
 Kubwarden ایک افادیت ہے، https://github.com/kubewarden/kwctl\[`kwctl`)، جو Kubernetes کے باہر پالیسیوں کی جانچ کی اجازت دیتا ہے.
 
-اس کا استعمال کرنے کے لئے آپ مندرجہ ذیل آدانوں کے ساتھ اس کا استعمال کرتے ہیں`kwctl`:
+اس کا استعمال کرنے کے لئے آپ مندرجہ ذیل آدانوں کے ساتھ اس کا استعمال کرتے ہیں`kwctl`&nbsp;:
 
-. پالیسی کے لئے ایک بائنری فائل URI. کوبیورڈن کی پالیسی مندرجہ ذیل سے لوڈ ہوسکتی ہے: مقامی filesystem `file://`ایک HTTP (ے) سرور `https://`ایک OCI رجسٹری`registry://`. . ٹیسٹ کے لئے درخواست دینے کے لئے اعتراض. آپ نے دلیل کے ساتھ اس کو پیش کیا ہے۔`--request-path` `stdin`سیٹ کرنے کے لئے استعمال کریں.```--request-path``-``` . پرچم کے ذریعے ایک ان لائن JSON کے طور پر رن ٹائم کے لئے پالیسی کی ترتیبات`--settings-json`. یا ایک JSON، یا ایک YAML فائل، کے ذریعے فائل سسٹم سے بھری ہوئی`--settings-path`.
+. پالیسی کے لئے ایک بائنری فائل URI. کوبیورڈن کی پالیسی مندرجہ ذیل سے لوڈ ہوسکتی ہے&nbsp;: مقامی système de fichiers `file://`ایک HTTP (ے) سرور `https://`ایک OCI رجسٹری`registry://`. . ٹیسٹ کے لئے درخواست دینے کے لئے اعتراض. آپ نے دلیل کے ساتھ اس کو پیش کیا ہے۔`--request-path` `stdin`سیٹ کرنے کے لئے استعمال کریں.```--request-path``-``` . پرچم کے ذریعے ایک ان لائن JSON کے طور پر رن ٹائم کے لئے پالیسی کی ترتیبات`--settings-json`. یا ایک JSON، یا ایک YAML فائل، کے ذریعے فائل سسٹم سے بھری ہوئی`--settings-path`.
 
 ٹیسٹ کے بعد`kwctl`، معیاری پیداوار پر اعتراض پرنٹ `ValidationResponse`کریں.
 
@@ -25,55 +25,55 @@ Kubwarden ایک افادیت ہے، https://github.com/kubewarden/kwctl\[`kwctl
 
 آپ کو پالیسی کی جانچ کرنے کے لئے اشیاء کے ساتھ فائلوں کو پیدا کرنے کی ضرورت ہے`AdmissionReview`.
 
-آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-no-specific-apparmor-profile.json`:
+آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-no-specific-apparmor-profile.json`&nbsp;:
 
 .pod-req-no-specific-apparmor-profile.json
 
 \[%scrumable]
 ===
 
-\[subs کے"،" اوصاف json کے]
+\[subs کے" اوصاف"، json کے]
 ---
 
-("
+(&nbsp;»
 
-UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،
+UID&nbsp;»&nbsp;: 1299d386-525b-4032-98ae-1949f69f9cfc،
 
-"قسم":
+«&nbsp;قسم&nbsp;»&nbsp;:
 
-« قسم««: "POD"،
+«&nbsp;قسم&nbsp;»&nbsp;: "POD"،
 
-"ورژن": "v1"
+«&nbsp;ورژن&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»
 
 ،
 
-"آبجیکٹ": (
+«&nbsp;آبجیکٹ&nbsp;»&nbsp;: (
 
-"میٹا ڈیٹا":
+«&nbsp;میٹا ڈیٹا&nbsp;»&nbsp;:
 
-"نام": نہیں۔
+«&nbsp;نام&nbsp;»&nbsp;: «&nbsp;نہیں۔
 
-««، »’سپیک«:
+«&nbsp;،&nbsp;»«&nbsp;سپیک&nbsp;»&nbsp;:
 
-"کنٹینرز": (
+«&nbsp;کنٹینرز&nbsp;»&nbsp;: (
 
-"تصویر": "nginx"،
+«&nbsp;تصویر&nbsp;»&nbsp;: "nginx"،
 
-"نام":
+«&nbsp;نام&nbsp;»&nbsp;:
 
-(»
+(&nbsp;»
 
-«آپریشن«): "تخلیق کریں"،
+«&nbsp;آپریشن&nbsp;»)&nbsp;: "تخلیق کریں"،
 
-"Richiedente Kind": ("ورژن": "v1"، "قسم": "pod"،
+«&nbsp;RequestKind&nbsp;»&nbsp;: («&nbsp;ورژن&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»، «&nbsp;قسم&nbsp;»&nbsp;: "pod"،
 
-"Userinfo": (
+«&nbsp;Infos utilisateur&nbsp;»&nbsp;: (
 
-"صارف نام": "ایلس"،
+«&nbsp;صارف نام&nbsp;»&nbsp;: "ایلس"،
 
-"uid": Alice-uid،
+«&nbsp;uid&nbsp;»&nbsp;: Alice-uid،
 
-"گروپس": ["PK"] [pubblicato
+«&nbsp;گروپس&nbsp;»&nbsp;: [«&nbsp;PK&nbsp;»] [publié
 
 ---
 
@@ -81,61 +81,61 @@ UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،
 
 یہ درخواست ایک پوڈ بنانے کی کوشش کرتا ہے جو استعمال کرنے کے لئے کسی بھی ایپ آرمر پروفائل کی وضاحت نہیں کرتا ہے۔ کیونکہ اس کے پاس  `container.apparmor.security.beta.kubernetes.io/<container-name>`چابی نہیں `annotation`ہے۔
 
-آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-apparmor-unconfined.json`:
+آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-apparmor-unconfined.json`&nbsp;:
 
-.pod-req-apparmor-unconfined.json
+.pod-req-apparmor-unconfiné.json
 
 [%scrumable]
 ===
 
-[subs کے"،" اوصاف json کے]
+[subs کے" اوصاف"، json کے]
 ---
 
-("
+(&nbsp;»
 
-UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،
+UID&nbsp;»&nbsp;: 1299d386-525b-4032-98ae-1949f69f9cfc،
 
-"قسم":
+«&nbsp;قسم&nbsp;»&nbsp;:
 
-« قسم««: "POD"،
+«&nbsp;قسم&nbsp;»&nbsp;: "POD"،
 
-"ورژن": "v1"
-
-،
-
-"آبجیکٹ": (
-
-"میٹا ڈیٹا":
-
-"نام": "مراعات یافتہ پوڈ"،
-
-"تشریحات":
-
-(container.apparmor.security.beta.kubernetes.io/nginx":) "غیر محدود")
+«&nbsp;ورژن&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»
 
 ،
 
-"سپیک":
+«&nbsp;آبجیکٹ&nbsp;»&nbsp;: (
 
-"کنٹینرز": (
+«&nbsp;میٹا ڈیٹا&nbsp;»&nbsp;:
 
-"تصویر": "nginx"،
+«&nbsp;نام&nbsp;»&nbsp;: "مراعات یافتہ پوڈ"،
 
-"نام":
+«&nbsp;تشریحات&nbsp;»&nbsp;:
 
-(»
+(container.apparmor.security.beta.kubernetes.io/nginx"&nbsp;:) «&nbsp;غیر محدود&nbsp;»)
 
-«آپریشن«): "تخلیق کریں"،
+،
 
-"Richiedente Kind": ("ورژن": "v1"، "قسم": "pod"،
+«&nbsp;سپیک&nbsp;»&nbsp;:
 
-"Userinfo": (
+«&nbsp;کنٹینرز&nbsp;»&nbsp;: (
 
-"صارف نام": "ایلس"،
+«&nbsp;تصویر&nbsp;»&nbsp;: "nginx"،
 
-"uid": Alice-uid،
+«&nbsp;نام&nbsp;»&nbsp;:
 
-"گروپس": ["PK"] [pubblicato
+(&nbsp;»
+
+«&nbsp;آپریشن&nbsp;»)&nbsp;: "تخلیق کریں"،
+
+«&nbsp;RequestKind&nbsp;»&nbsp;: («&nbsp;ورژن&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»، «&nbsp;قسم&nbsp;»&nbsp;: "pod"،
+
+«&nbsp;Infos utilisateur&nbsp;»&nbsp;: (
+
+«&nbsp;صارف نام&nbsp;»&nbsp;: "ایلس"،
+
+«&nbsp;uid&nbsp;»&nbsp;: Alice-uid،
+
+«&nbsp;گروپس&nbsp;»&nbsp;: [«&nbsp;PK&nbsp;»] [publié
 
 ---
 
@@ -143,61 +143,61 @@ UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،
 
 یہ درخواست اپارمر پروفائل کے ساتھ چل رہا ہے نامی ایک کنٹینر کے ساتھ `unconfined`ایک پوڈ پیدا کرنے کی کوشش کرتا ہے`nginx`. یہ صرف ٹیوٹوریل مقاصد کے لئے ہے. موڈ میں چل رہا ہے `unconfined`ایک خراب سیکورٹی مشق ہے.
 
-اب آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-apparmor-custom.json`:
+اب آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-apparmor-custom.json`&nbsp;:
 
 .pod-req-apparmor-custom.json
 
 [%scrumable]
 ===
 
-[subs کے"،" اوصاف json کے]
+[subs کے" اوصاف"، json کے]
 ---
 
-("
+(&nbsp;»
 
-UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،
+UID&nbsp;»&nbsp;: 1299d386-525b-4032-98ae-1949f69f9cfc،
 
-"قسم":
+«&nbsp;قسم&nbsp;»&nbsp;:
 
-« قسم««: "POD"،
+«&nbsp;قسم&nbsp;»&nbsp;: "POD"،
 
-"ورژن": "v1"
-
-،
-
-"آبجیکٹ": (
-
-"میٹا ڈیٹا":
-
-"نام": "مراعات یافتہ پوڈ"،
-
-"تشریحات":
-
-(container.apparmor.security.beta.kubernetes.io/nginx":) "لوکل ہوسٹ/nginx-custom"
+«&nbsp;ورژن&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»
 
 ،
 
-"spec.":
+«&nbsp;آبجیکٹ&nbsp;»&nbsp;: (
 
-"کنٹینرز": (
+«&nbsp;میٹا ڈیٹا&nbsp;»&nbsp;:
 
-"تصویر": "nginx"،
+«&nbsp;نام&nbsp;»&nbsp;: "مراعات یافتہ پوڈ"،
 
-"نام":
+«&nbsp;تشریحات&nbsp;»&nbsp;:
 
-(»
+(container.apparmor.security.beta.kubernetes.io/nginx"&nbsp;:) «&nbsp;لوکل ہوسٹ/nginx-custom&nbsp;»
 
-«آپریشن«): "تخلیق کریں"،
+،
 
-"Richiedente Kind": ("ورژن": "v1"، "قسم": "pod"،
+«&nbsp;spec&nbsp;»&nbsp;:
 
-"Userinfo": (
+«&nbsp;کنٹینرز&nbsp;»&nbsp;: (
 
-"صارف نام": "ایلس"،
+«&nbsp;تصویر&nbsp;»&nbsp;: "nginx"،
 
-"uid": Alice-uid،
+«&nbsp;نام&nbsp;»&nbsp;:
 
-"گروپس": ["PK"] [pubblicato
+(&nbsp;»
+
+«&nbsp;آپریشن&nbsp;»)&nbsp;: "تخلیق کریں"،
+
+«&nbsp;RequestKind&nbsp;»&nbsp;: («&nbsp;ورژن&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»، «&nbsp;قسم&nbsp;»&nbsp;: "pod"،
+
+«&nbsp;Infos utilisateur&nbsp;»&nbsp;: (
+
+«&nbsp;صارف نام&nbsp;»&nbsp;: "ایلس"،
+
+«&nbsp;uid&nbsp;»&nbsp;: Alice-uid،
+
+«&nbsp;گروپس&nbsp;»&nbsp;: [«&nbsp;PK&nbsp;»] [publié
 
 ---
 
@@ -213,94 +213,94 @@ UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،
 
 سیاست کا امتحان لیں
 
-اب آپ ایک پوڈ کی تخلیق کی جانچ کرنے کے لئے استعمال کر سکتے ہیں `kwctl`جس میں ایک اپلی کیشن پروفائل کی وضاحت نہیں کی جاتی ہے:
+اب آپ ایک پوڈ کی تخلیق کی جانچ کرنے کے لئے استعمال کر سکتے ہیں `kwctl`جس میں ایک اپلی کیشن پروفائل کی وضاحت نہیں کی جاتی ہے&nbsp;:
 
 [subs کے" اوصاف"، کنسول]
 ---
 
 $ kwctl رن  
 \- درخواست راستہ پوڈ-req-no-specific-apparmor-json  
-رجسٹری://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4  
+رجسٹری&nbsp;://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4  
 jq
 ---
 
-پالیسی درخواست کو قبول کرتی ہے اور پیداوار پیدا کرتی ہے جیسے:
+پالیسی درخواست کو قبول کرتی ہے اور پیداوار پیدا کرتی ہے جیسے&nbsp;:
 
 [subs کے" اوصاف"، کنسول]
 ---
 
-("
+(&nbsp;»
 
-UID": "129d386-525b-4032-98ae-1949f69f9cfc"،
+UID&nbsp;»&nbsp;: 129d386-525b-4032-98ae-1949f69f9cfc،
 
-"اجازت دی": سچ
+«&nbsp;اجازت دی&nbsp;»&nbsp;: سچ
 
 ---
 
-اس پالیسی میں ایک ایپ آرمر پروفائل کے ساتھ ایک پوڈ کی تخلیق کو مسترد کیا `unconfined`گیا ہے:
+اس پالیسی میں ایک ایپ آرمر پروفائل کے ساتھ ایک پوڈ کی تخلیق کو مسترد کیا `unconfined`گیا ہے&nbsp;:
 
 [subs کے" اوصاف"، کنسول]
 ---
 
 $ kwctl رن  
 \- درخواست راستہ پوڈ-req-apparmor-uninfined.json  
-رجسٹری://ghcr.io/kubwarden/psp-apparmor:v0.1.4  
+رجسٹری&nbsp;://ghcr.io/kubwarden/psp-apparmor:v0.1.4  
 jq
 
-"1299d386-525b-4032-98ae-1949f69f9cfc"،
+1299d386-525b-4032-98ae-1949f69f9cfc،
 
-"اجازت": غلط، "
+«&nbsp;اجازت&nbsp;»&nbsp;: غلط، "
 
-حیثیت":
+حیثیت&nbsp;»&nbsp;:
 
-"پیغام": ان ایپلی کیشنز پروفائلز کی اجازت نہیں ہے: ["PK"] [pubblicato
+«&nbsp;پیغام&nbsp;»&nbsp;: ان ایپلی کیشنز پروفائلز کی اجازت نہیں ہے&nbsp;: [«&nbsp;PK&nbsp;»] [publié
 
 ---
 
 دونوں مواقع پر آپ نے کسی بھی قسم کی ترتیب فراہم کیے *بغیر* پالیسی چلائی۔ جیسا کہ https://github.com/kubewarden/psp-apparmor#configuration[policy's دستاویزات بیان کرتی ہیں، اس کے نتیجے میں غیر ڈیفالٹ پروفائلز کے استعمال کو روکنے میں مدد ملتی ہے.
 
-ایک کسٹم پروفائل کا استعمال کرتے ہوئے پوڈ `nginx`بھی پالیسی کی طرف سے مسترد کر دیا جاتا ہے:
+ایک کسٹم پروفائل کا استعمال کرتے ہوئے پوڈ `nginx`بھی پالیسی کی طرف سے مسترد کر دیا جاتا ہے&nbsp;:
 
 [subs کے" اوصاف"، کنسول]
 ---
 
 $ kwctl رن  
 \- درخواست راستہ پوڈ-req-apparmor-custom.json  
-رجسٹری:///ghcr.io/kubwarden/psp-apparmor:v0.1.4  
+رجسٹری&nbsp;:///ghcr.io/kubwarden/psp-apparmor:v0.1.4  
 | jq
 
-"1299d386-525b-4032-98ae-1949f69f9cfc"،
+1299d386-525b-4032-98ae-1949f69f9cfc،
 
-"اجازت": غلط، "
+«&nbsp;اجازت&nbsp;»&nbsp;: غلط، "
 
-حیثیت":
+حیثیت&nbsp;»&nbsp;:
 
-"پیغام": ان ایپلی کیشنز پروفائلز کی اجازت نہیں ہے: ["localhost/nginx-custom"]
+«&nbsp;پیغام&nbsp;»&nbsp;: ان ایپلی کیشنز پروفائلز کی اجازت نہیں ہے&nbsp;: [«&nbsp;localhost/nginx-custom&nbsp;»]
 
 ---
 
-آپ ڈیفالٹ رویے کو تبدیل کر سکتے ہیں، منتخب کردہ AppArmor پروفائلز کو استعمال کرنے کی اجازت دیتا ہے:
+آپ ڈیفالٹ رویے کو تبدیل کر سکتے ہیں، منتخب کردہ AppArmor پروفائلز کو استعمال کرنے کی اجازت دیتا ہے&nbsp;:
 
 [subs کے" اوصاف"، کنسول]
 ---
 
 $ kwctl رن  
 \- درخواست راستہ پوڈ-req-apparmor-custom.json  
-\-- ترتیبات-json 'کی اجازت_profiles': ["runtime/default", "localhost/nginx-custom"]'  
-رجسٹری://ghcr.io/kubwarden/psp-apparmor:v0.1.4  
+\-- ترتیبات-json 'کی اجازت_profiles'&nbsp;: ["runtime/default", "localhost/nginx-custom"]'  
+رجسٹری&nbsp;://ghcr.io/kubwarden/psp-apparmor:v0.1.4  
 jq
 ---
 
-اب درخواست کامیاب ہے:
+اب درخواست کامیاب ہے&nbsp;:
 
 [subs کے" اوصاف"، کنسول]
 ---
 
-("
+(&nbsp;»
 
-UID": "129d386-525b-4032-98ae-1949f69f9cfc"،
+UID&nbsp;»&nbsp;: 129d386-525b-4032-98ae-1949f69f9cfc،
 
-"اجازت دی": سچ
+«&nbsp;اجازت دی&nbsp;»&nbsp;: سچ
 
 ---
 
@@ -310,52 +310,52 @@ UID": "129d386-525b-4032-98ae-1949f69f9cfc"،
 
 آپ ٹیسٹ کی ایک سیریز لکھ سکتے ہیں اور اپنے موجودہ سی آئی اور سی ڈی پائپ لائنز کے اندر ان کی عملدرآمد کو ضم کر سکتے ہیں.
 
-اس کے علاوہ، آپ کو ایک ٹیسٹ میں "مکمل طور پر ختم" کیا جا سکتا ہے`bats`:
+اس کے علاوہ، آپ کو ایک ٹیسٹ میں "مکمل طور پر ختم" کیا جا سکتا ہے`bats`&nbsp;:
 
-A بیسٹ
+.A بیسٹ
 
-[%collabile]
+[%collectable]
 ===
 
 [، باش]
 ---
 
 @test "سب اچھا ہے" (Kwctl رن  
-\- درخواست راستہ پوڈ-req-no-apparmor-file.json  
-رجسٹری://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4
+\- درخواست راستہ پوڈ-req-no-apparmor-file.JSON  
+رجسٹری&nbsp;://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4
 
 # یہ پیداوار کو پرنٹ کرتا ہے جب ایک نیچے چیک ناکام ہوجاتا ہے
 
-Eco "پیداوار" - $ [پیداوار]
+ECHO "پیداوار" - $ [پیداوار]
 
 # درخواست قبول ہوگئی
 
-[ $ (expr "$پیداوار": '.*اجازت ہے: سچ*') \[0]
+[ $ (expr "$پیداوار"&nbsp;: '.*اجازت ہے&nbsp;: سچ*') \[0]
 
 @test "مسترد" (Kwctl رن چلائیں  
-\- درخواست راستہ پوڈ-req-apparmor-custom.json  
-رجسٹری://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4
+\- درخواست راستہ پوڈ-req-apparmor-custom.JSON  
+رجسٹری&nbsp;://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4
 
 # یہ پیداوار کو پرنٹ کرتا ہے جب ایک نیچے چیک ناکام ہوجاتا ہے
 
-Eco "پیداوار" - $ [پیداوار]
+ECHO "پیداوار" - $ [پیداوار]
 
 # درخواست مسترد ہوگئی
 
-[ $ (expr "$پیداوار": '.*اجازت ہے۔۔۔:false:*') \[0]
+[ $ (expr "$پیداوار"&nbsp;: '.*اجازت ہے۔۔۔:false:*') \[0]
 
 ---
 
 (متعدی
 
-اگر `bats`کوڈ فائل میں ہے`e2e.bats`، تو آپ ٹیسٹ کو اس طرح چلا سکتے ہیں:
+اگر `bats`کوڈ فائل میں ہے`e2e.bats`، تو آپ ٹیسٹ کو اس طرح چلا سکتے ہیں&nbsp;:
 
 [subs کے" اوصاف"، کنسول]
 ---
 
-$ bats e2e.bats ✓ سب اچھا ہے ✓ مسترد
+$ chauves-souris e2e.chauves-souris ✓ سب اچھا ہے ✓ مسترد
 
 2 ٹیسٹ، 0 ناکامیاں
 ---
 
-xref: سبق / تحریری پالیسیاں / GO / 05-E2E-Tests.ADOc [یہ] سیکشن آپ کی پالیسیوں کے لئے اختتام سے آخر تک ٹیسٹ لکھنے کے بارے میں مزید ہے.
+xref&nbsp;: سبق / تحریری پالیسیاں / GO / 05-E2E-tests.Adoc [یہ] سیکشن آپ کی پالیسیوں کے لئے اختتام سے آخر تک ٹیسٹ لکھنے کے بارے میں مزید ہے.
