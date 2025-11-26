@@ -1,104 +1,83 @@
-= Testing for policy authors
-:revdate: 2025-06-03
-:page-revdate: {revdate}
-:description: An introduction to testing Kubewarden policies for policy authors.
-:doc-persona: ["kubewarden-policy-developer"]
-:doc-topic: ["testing-policies", "policy-authors"]
-:doc-type: ["tutorial"]
-:keywords: ["kubewarden", "policy testing", "policy author", "rust", "go", "assemblyscript", "development environment"]
-:sidebar_label: Policy authors
-:current-version: {page-origin-branch}
+پالیسی مصنفین کے لئے ٹیسٹنگ :revdate:2025-06-03 :page-revdate: :description:پالیسی مصنفین کے لئے Kubwarden پالیسیوں کی جانچ کرنے کا تعارف. :doc-persona: \["kubuwarden-policy-developer:doc-topic:"]  \["testing-policy-authors:doc-type:"] \["tutorial"] \["kubwarden", "political :keywords:testing", "rust", "جاؤ"، "اسمبلسکرپٹ"، "ترقی کے ماحول")  پالیسی مصنفین :current-version: (صفحہ اصل شاخ):sidebar_label:
 
-Kubewarden policies are regular programs compiled as WebAssembly (Wasm).
-As with any kind of program, good test coverage is important.
+Kubwarden پالیسیاں باقاعدہ پروگرام ہیں جو WebAssembly (WASM) کے طور پر مرتب ہوتے ہیں. کسی بھی قسم کے پروگرام کی طرح، اچھی جانچ کی کوریج اہم ہے.
 
-Policy authors can use their favorite development environments.
-You can use familiar tools, and testing frameworks to verify development.
+صارفین اپنے پسندیدہ ماحول کا استعمال کرسکتے ہیں. آپ کو واقف اوزار استعمال کر سکتے ہیں, اور ترقی کی تصدیق کے لئے جانچ کے فریم ورک.
 
-These Kubewarden policies are examples written in
-xref:tutorials/writing-policies/rust/01-intro-rust.adoc[Rust] and
-xref:tutorials/writing-policies/go/01-intro-go.adoc[Go]:
+یہ Kubiwarden پالیسیاں xref میں لکھا مثال ہیں: سبق / تحریری پالیسیوں / مورچا / 01-intro-rust.adoc [Rust] اور xref: سبق / تحریری پالیسیاں / GO / 01-intergo.adoc [GO]:
 
-* https://github.com/kubewarden/psp-apparmor[psp-apparmor]
-* https://github.com/kubewarden/ingress-policy[ingress-policy]
+* https://github.com/kubewarden/psp-apparmor\[psp-apparmor]
+* https://github.com/kubewarden/ingress-policy\[ingress-policy]
 
-They have test suites using standard testing for their development environments.
+ان کی ترقی کے ماحول کے لئے معیاری ٹیسٹنگ کا استعمال کرتے ہوئے ٹیسٹ سوئٹ ہیں.
 
-The policies use GitHub Actions for their CI pipelines.
+پالیسیاں GitHub ان کے CI پائپ لائنز کے لئے اعمال کا استعمال کرتے ہیں.
 
-== End-to-end tests
+[Published] آخر میں ٹیسٹ
 
-You can also write tests that execute against the Wasm binary containing your policy.
-To do this without having to deploy a Kubernetes cluster you can use these tools:
+آپ یہ بھی ٹیسٹ لکھ سکتے ہیں جو آپ کی پالیسی پر مشتمل Wasm بائنری کے خلاف عمل کرتے ہیں. ایسا کرنے کے لئے، آپ کو ایک کوبرنیٹ کلسٹر تعینات کرنے کی ضرورت نہیں ہے، آپ ان آلات کو استعمال کرسکتے ہیں:
 
-* https://github.com/bats-core/bats-core[bats]: is to write tests and automate their execution.
-* https://github.com/kubewarden/kwctl[`kwctl`]: Kubewarden's default CLI tool that helps you with policy-related operations; pull, inspect, annotate, push, and run.
+* https://github.com/bats-core/bats-core[bats]:۔ ٹیسٹ لکھنے اور ان پر عمل درآمد کو خود کار بنانا۔
+* https://github.com/kubewarden/kwctl[]:`kwctl` Kubewarden کی ڈیفالٹ CLI کا آلہ جو پالیسی سے متعلق کارروائیوں میں آپ کی مدد کرتا ہے؛ ھیںچو، معائنہ، تشریحات، دھکا، اور دوڑو۔
 
-To use `kwctl run` you need the following:
+استعمال کرنے  کے لئے، `kwctl run`آپ کو مندرجہ ذیل کی ضرورت ہے:
 
-. The Wasm binary file reference of the policy to run.
-The Kubewarden policy can be loaded from:
- ** the local filesystem (`file://`)
- ** a HTTP(s) server (`https://`
- ** an OCI registry (`registry://`).
-. The admission request object to test.
-You give it via the `--request-path` argument,
-or on `stdin` by setting `--request-path` to `-`.
-. The policy settings for runtime as an inline JSON via `--settings-json` flag.
-Or a JSON, or a YAML file, loaded from the file system via `--settings-path`.
+. چلانے کے لئے پالیسی کا Wasm بائنری فائل حوالہ. کبوتر کی پالیسی سے لوڈ کیا جا سکتا ہے: مقامی فائل سسٹم (`file://`) ایک HTTP (s) سرور ((ایک OCI رجسٹری`registry://`)`https://`. . ٹیسٹ کے لئے درخواست دینے کے لئے اعتراض. آپ اسے دلیل کے ذریعہ یا `stdin`ترتیب دینے کے `--request-path`ذریعے دیتے `--request-path` `-`ہیں. . پرچم کے ذریعے ایک ان لائن JSON کے طور پر رن ٹائم کے لئے پالیسی کی ترتیبات`--settings-json`. یا ایک JSON، یا ایک YAML فائل، کے ذریعے فائل سسٹم سے بھری ہوئی`--settings-path`.
 
-After the test `kwctl`, prints the `ValidationResponse` object to standard output.
+ٹیسٹ کے بعد`kwctl`، اشیاء کو معیاری پیداوار پر پرنٹ `ValidationResponse`کریں.
 
-This is how you use `kwctl` to test the Wasm binary of the https://github.com/kubewarden/ingress-policy[`ingress-policy`] mentioned previously:
+اس طرح آپ https://github.com/kubewarden/ingress-policy\[ کے Wasm بائنری ٹیسٹ کرنے کے لئے`ingress-policy` استعمال کرتے ہیں `kwctl`[ذکر کردہ] پہلے ذکر کیا گیا ہے:
 
-[subs="+attributes",console]
-----
-$ curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2> /dev/null | \
-    kwctl run \
-        --settings-json '{"allowPorts": [80], "denyPorts": [3000]}' \
-        --request-path - \
-        registry://ghcr.io/kubewarden/policies/ingress:v0.1.8 | jq
-----
+\[subs کے" اوصاف"، کنسول]
+---
 
-You can download pre-built binaries of `kwctl`
-https://github.com/kubewarden/kwctl/releases[here].
+$ Curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2\[/Dev/null|  
+kwctl رن  
+\-- ترتیبات-json '["الاؤٹ"]: [80]، "denyPorts": [3000]'  
+\- درخواست راہ \-  
+رجسٹری:///ghcr.io/kubwarden/پالیسیاں/اندراج:v0.1.8| jq
+---
 
-Using `bats` you can write a test that runs this command and looks for the expected outputs:
+آپ https://github.com/kubewarden/kwctl/releases[here] کے پہلے سے تعمیر شدہ بائنری ڈاؤن لوڈ کرسکتے ہیں`kwctl`.
 
-.A bats test
-[%collapsible]
-======
+آپ کا استعمال کرتے ہوئے ایک ٹیسٹ لکھ سکتے ہیں جو اس کمانڈ کو چلاتا ہے `bats`اور متوقع نتائج کو دیکھتا ہے:
 
-[,bash]
-----
-@test "all is good" {
-  run kwctl run \
-    --request-path test_data/ingress-wildcard.json \
-    --settings-json '{"allowPorts": [80], "denyPorts": [3000]}' \
-    ingress-policy.wasm
+.A چمگادڑ کی جانچ  
+\[%scrapsible]
+===
 
-  # this prints the output when one the checks below fails
-  echo "output = ${output}"
+\[، باش]
+---
 
-  # settings validation passed
-  [[ "$output" == *"valid: true"* ]]
+@test "سب اچھا ہے" (Kwctl رن  
+\- درخواست راستہ ٹیسٹ_ڈیٹا / داخلہ wildcard.json  
+\-- ترتیبات-json ') چلائیں: [80]، "denyPorts": [3000] ۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔۔  
 
-  # request accepted
-  [[ "$output" == *"allowed: true"* ]]
-}
-----
 
-======
+# یہ پیداوار کو پرنٹ کرتا ہے جب ایک نیچے چیک ناکام ہوجاتا ہے
 
-You can put the code in a file, `e2e.bats`, for example, and then invoke `bats` by:
+Echo "پیداوار" - $ \[پیداوار]
 
-[subs="+attributes",console]
-----
-$ bats e2e.bats
- ✓ all is good
+# سیٹنگز کی توثیق گزر گئی
 
-1 tests, 0 failures
-----
+[[[[\[$ پیداوار ] *"درست: سچ"*]]]
 
-xref:tutorials/writing-policies/go/05-e2e-tests.adoc[This]
-section of the documentation has more about writing end-to-end tests of your policies.
+# درخواست قبول ہوگئی
+
+\["PK"] \[*Published*] \[*Published  
+*
+---
+
+(متعدی
+
+آپ ایک فائل میں کوڈ ڈال سکتے ہیں، `e2e.bats`مثال کے طور پر، اور پھر کی طرف سے درخواست`bats`:
+
+\[subs کے" اوصاف"، کنسول]
+---
+
+$ bats e2e.bats ✓ سب اچھا ہے
+
+1 ٹیسٹ، 0 ناکامیاں
+---
+
+xref: سبق / تحریری پالیسیاں / GO / 05-E2E-Tests.Adoc [یہ] دستاویز کے حصے میں آپ کی پالیسیوں کے اختتام سے آخر تک ٹیسٹ لکھنے کے بارے میں مزید ہے.
