@@ -1,0 +1,85 @@
+= tests pour les auteurs de politiques :revdate:2025-06-03 :page-revdate: {revdate} :description: une introduction au test des politiques Kubewarden pour les auteurs de politiques. :doc-persona: ["kubewarden-policy-developer"] :doc-topic: ["testing-policies", "policy-writers"] :doc-type: ["tutoriel"] :keywords: ["kubewarden", "policy testing", "policy author", "rouille", "Go", "assembyscript", "Development environment"] :sidebar_label:auteurs de règles :current-version:{page-origin-branch}
+
+Les politiques Kubewarden sont des programmes réguliers compilés sous forme de WebAssembly (Wasm). Comme pour tout type de programme, une bonne couverture de test est importante.
+
+Les auteurs de stratégies peuvent utiliser leurs environnements de développement préféré. Vous pouvez utiliser des outils familiers et des frameworks de test pour vérifier le développement.
+
+Ces règles Kubewarden sont des exemples écrits dans xref:tutorials/writing-Policies/Rust/01-intro-Rust.adoc[Rust] et xref:tutorials/writing-Policies/Go/01-intro-Go.adoc[Go]&nbsp;&nbsp;:
+
+* https://github.com/kubewarden/psp-apparmor\[psp-apparmor]
+* https://github.com/kubewarden/ingress-policy\[ingress-policy]
+
+Ils fournissent des suites de tests utilisant des tests standard pour leurs environnements de développement.
+
+Les politiques utilisent des actions github pour leurs pipelines ci.
+
+== tests de bout en bout
+
+Vous pouvez également écrire des tests qui s'exécutent sur le binaire Wasm contenant votre stratégie. Pour ce faire sans avoir à déployer cluster Kubernetes, vous pouvez utiliser ces outils&nbsp;&nbsp;:
+
+* https://github.com/bats-core/bats-core[bats]: est&nbsp;: est&nbsp;&nbsp;: est d'écrire des tests et d'automatiser leur exécution.
+* https://github.com/kubewarden/kwctl\[`kwctl`]&nbsp;&nbsp;: Outil CLI par défaut de Kubewarden qui vous aide avec les opérations aux stratégies&nbsp;&nbsp;: extrait, inspecteur, annoter, pousser, et présenté.
+
+Pour utiliser`kwctl run`, vous avez besoin des éléments suivants&nbsp;&nbsp;:
+
+. Référence du fichier binaire Wasm de la stratégie à exécuter. La stratégie Kubewarden peut être charger à partir de&nbsp;&nbsp;: ** Le système de fichiers local (`file://`) ** un serveur HTTP(s) (`https://` ** un registre OCI (`registry://`). . Objet de demande d'admission à tester. Vous le donnez via l'`--request-path`argument, ou on `stdin`définit `--request-path` sur `-`. . Les paramètres de stratégie pour l'exécution en tant que JSON en ligne via `--settings-json` drapeau. Ou un fichier JSON, ou YAML, chargé à partir du système de fichiers via `--settings-path`.
+
+Après le test `kwctl`, imprime l'`ValidationResponse`objet sur la sortie standard.
+
+Voici comment vous êtes `kwctl` pour tester le binaire Wasm du https://github.com/kubewarden/ingress-policy\[`ingress-policy`] mentionné&nbsp;&nbsp;:
+
+\[subs="+attributes",console]
+---
+
+$ curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2> /dev/null |  
+kwctl run  
+\--settings-JSON '{"allowPorts"&nbsp;&nbsp;: [80], «&nbsp;&nbsp;denyPorts&nbsp;&nbsp;»&nbsp;&nbsp;: [3000]}'  
+\--request-path -  
+register&nbsp;&nbsp;://ghcr.io/kubewarden/policies/ingress:v0.1.8 | jq
+---
+
+Vous pouvez télécharger les binaires pré-publiés de `kwctl` https://github.com/kubewarden/kwctl/releases[here].
+
+En utilisant `bats` vous pouvez écrire un test qui demande cette commande et recherche les sorties attendues&nbsp;&nbsp;:
+
+.A test chauves-souris
+
+\[%compressible]
+===
+
+\[,bash]
+---
+
+@test "Tout va bien" { run kwctl run  
+\--request-path test_data/ingress-wildcard.JSON  
+\--settings-JSON '{"allowPorts"&nbsp;&nbsp;: [80], «&nbsp;&nbsp;denyPorts&nbsp;&nbsp;»&nbsp;&nbsp;: [3000]}'  
+ingress-policy.wasm
+
+# ceci imprime la sortie when l'une des erreurs ci-dessous échoue
+
+echo «&nbsp;&nbsp;output = ${output}&nbsp;&nbsp;»
+
+# validation des paramètres réussie
+
+[\[ "$output" == *"valide&nbsp;&nbsp;: true"* ]]
+
+# demande validée
+
+[\[ "$output" == *"autorisé&nbsp;&nbsp;: true"* ]]
+
+}
+---
+
+\========
+
+Vous pouvez placer le code dans un fichier, `e2e.bats`, par exemple, puis invoquer `bats` par&nbsp;&nbsp;:
+
+\[subs="+attributes",console]
+---
+
+$ bats e2e.bats ✓ tout est bon
+
+1 tests, 0 échecs
+---
+
+xref:tutorials/writing-Policies/Go/05-e2e-tests.adoc[cette] section de la documentation contient plus d'informations sur l'écriture de tests de bout en bout de vos stratégies.
