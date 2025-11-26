@@ -1,104 +1,83 @@
-= Testing for policy authors.
-:revdate: 2025-06-03
-:page-revdate: {revdate}
-:description: An introduction to testing Kubewarden policies for policy authors.
-:doc-persona: ["kubewarden-policy-developer"]
-:doc-topic: ["testing-policies", "policy-authors"]
-:doc-type: ["tutorial"]
-:keywords: ["kubewarden", "policy testing", "policy author", "rust", "go", "assemblyscript", "development environment"]
-:sidebar_label: Policy authors
-:current-version: {page-origin-branch}
+= test per gli autori delle policy. :revdate: 2025-06-03 :page-revdate: {revdate} :description: un'introduzione al test delle politiche Kubewarden per gli autori delle politiche. :doc-persona: ["kubewarden-policy-developer"] :doc-topic: ["test-policies", "policy-authors"] :doc-type: ["tutorial"] :keywords: ["kubewarden", "policy testing", "policy author", "ruggine", "vai", "assemblyscript", "ambiente di sviluppo"] :sidebar_label:autori delle policy :current-version:{page-origin-Branch}
 
-Kubewarden policies are regular programs compiled as WebAssembly (Wasm).
-As with any kind of program, good test coverage is important.
+Le politiche di Kubewarden sono programmi regolari compilati come WebAssembly (Wasm). Come per qualsiasi tipo di programma, una buona copertura dei test è importante.
 
-Policy authors can use their favorite development environments.
-You can use familiar tools, and testing frameworks to verify development.
+Gli autori di policy possono utilizzare i loro ambienti di sviluppo preferiti. È possibile utilizzare strumenti familiari e framework di test per verificare lo sviluppo.
 
-These Kubewarden policies are examples written in
-xref:tutorials/writing-policies/rust/01-intro-rust.adoc[Rust] and
-xref:tutorials/writing-policies/go/01-intro-go.adoc[Go]:
+Queste politiche Kubewarden sono esempi scritti in xref:tutorials/writing-policies/rust/01-intro-rust.adoc[Rust] e xref:tutorials/writing-policies/go/01-intro-go.adoc[go]:
 
-* https://github.com/kubewarden/psp-apparmor[psp-apparmor]
-* https://github.com/kubewarden/ingress-policy[ingress-policy]
+* https://github.com/kubewarden/psp-apparmor\[psp-apparmor]
+* https://github.com/kubewarden/ingress-policy\[ingress-policy]
 
-They have test suites using standard testing for their development environments.
+Dispongono di suite di test che utilizzano test standard per i loro ambienti di sviluppo.
 
-The policies use GitHub Actions for their CI pipelines.
+I criteri utilizzano le azioni GitHub per le loro pipeline ci.
 
-== End-to-end tests
+== test end-to-end
 
-You can also write tests that execute against the Wasm binary containing your policy.
-To do this without having to deploy a Kubernetes cluster you can use these tools:
+È inoltre possibile scrivere test eseguiti sul binario Wasm contenente il criterio. Per farlo senza dover distribuire un cluster Kubernetes, è possibile utilizzare questi strumenti:
 
-* https://github.com/bats-core/bats-core[bats]: is to write tests and automate their execution.
-* https://github.com/kubewarden/kwctl[`kwctl`]: Kubewarden's default CLI tool that helps you with policy-related operations; pull, inspect, annotate, push, and run.
+* https://github.com/bats-core/bats-core[bats]: è scrivere test e automatizzare la loro esecuzione.
+* https://github.com/kubewarden/kwctl\[`kwctl`]: Lo strumento CLI predefinito di Kubewarden che consente di eseguire operazioni correlate alle policy: Pull, Inspection, annotate, push, e corri.
 
-To use `kwctl run` you need the following:
+Per utilizzare `kwctl run`è necessario quanto segue:
 
-. The Wasm binary file reference of the policy to run.
-The Kubewarden policy can be loaded from:
- ** the local filesystem (`file://`)
- ** a HTTP(s) server (`https://`
- ** an OCI registry (`registry://`).
-. The admission request object to test.
-You give it via the `--request-path` argument,
-or on `stdin` by setting `--request-path` to `-`.
-. The policy settings for runtime as an inline JSON via `--settings-json` flag.
-Or a JSON, or a YAML file, loaded from the file system via `--settings-path`.
+. Il riferimento del file binario Wasm del criterio da eseguire. Il criterio Kubewarden può essere caricato da: ** Il filesystem locale (`file://`) ** un server HTTP(S) (`https://` ** un registro OCI (`registry://`). . Oggetto richiesta di ammissione da testare. Lo si ottiene tramite l'`--request-path`argomento o su `stdin`impostando `--request-path` su `-`. . Le impostazioni dei criteri per il runtime come JSON inline tramite `--settings-json` flag. O un file JSON, o YAML, caricato dal file system tramite `--settings-path`.
 
-After the test `kwctl`, prints the `ValidationResponse` object to standard output.
+Al termine del test `kwctl`, stampa l'`ValidationResponse`oggetto con l'output standard.
 
-This is how you use `kwctl` to test the Wasm binary of the https://github.com/kubewarden/ingress-policy[`ingress-policy`] mentioned previously:
+Questo è come si usa `kwctl` per testare il binario Wasm del https://github.com/kubewarden/ingress-policy\[`ingress-policy`] menzionato in precedenza:
 
-[subs="+attributes",console]
-----
-$ curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2> /dev/null | \
-    kwctl run \
-        --settings-json '{"allowPorts": [80], "denyPorts": [3000]}' \
-        --request-path - \
-        registry://ghcr.io/kubewarden/policies/ingress:v0.1.8 | jq
-----
+\[subs="+attributi",console]
+---
 
-You can download pre-built binaries of `kwctl`
-https://github.com/kubewarden/kwctl/releases[here].
+$ curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2> /dev/null |  
+kwctl run  
+\--settings-json '{"allowPorts": [80], "denyPorts": [3000]}'  
+\--request-path -  
+registry://ghcr.io/kubewarden/policies/ingress:v0.1.8 | jq
+---
 
-Using `bats` you can write a test that runs this command and looks for the expected outputs:
+È possibile scaricare i file binari predefiniti di `kwctl` https://github.com/kubewarden/kwctl/releases[here].
 
-.A bats test
-[%collapsible]
-======
+Utilizzando `bats` è possibile scrivere un test che esegue questo comando e cerca gli output previsti:
 
-[,bash]
-----
-@test "all is good" {
-  run kwctl run \
-    --request-path test_data/ingress-wildcard.json \
-    --settings-json '{"allowPorts": [80], "denyPorts": [3000]}' \
-    ingress-policy.wasm
+.Un test di pipistrelli  
+ \[%comprimibile]
+===
 
-  # this prints the output when one the checks below fails
-  echo "output = ${output}"
+\[,bash]
+---
 
-  # settings validation passed
-  [[ "$output" == *"valid: true"* ]]
+@test "Tutto è buono" { run kwctl run  
+\--request-path test_data/ingress-wildcard.json  
+\--settings-json '{"allowPorts": [80], "denyPorts": [3000]}'  
+ingress-policy.wasm
 
-  # request accepted
-  [[ "$output" == *"allowed: true"* ]]
+# questa operazione stampa l'output quando uno dei controlli seguenti non riesce
+
+eco "output = ${output}"
+
+# convalida impostazioni superata
+
+[\[ "$output" == *"valid: true"* ]]
+
+# richiesta accettata
+
+[\[ "$output" == *"allowed: true"* ]]  
 }
-----
+---
 
-======
+\======
 
-You can put the code in a file, `e2e.bats`, for example, and then invoke `bats` by:
+È possibile inserire il codice in un file, `e2e.bats`ad esempio , e quindi richiamarlo`bats`:
 
-[subs="+attributes",console]
-----
-$ bats e2e.bats
- ✓ all is good
+\[subs="+attributi",console]
+---
 
-1 tests, 0 failures
-----
+$ bats e2e.bats ✓ tutto è buono
 
-xref:tutorials/writing-policies/go/05-e2e-tests.adoc[This]
-section of the documentation has more about writing end-to-end tests of your policies.
+1 test, 0 errori
+---
+
+Xref:tutorials/writing-policies/go/05-e2e-tests.adoc[questo] sezione della documentazione contiene ulteriori informazioni sulla scrittura di test end-to-end delle policy.
