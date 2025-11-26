@@ -1,303 +1,303 @@
-= tests pour les opérateurs de cluster :revdate:2025-05-09 :page-revdate: {revdate} :description: une introduction au test des politiques Kubewarden pour les opérateurs de cluster. :doc-persona: ["kubewarden-policy-Developer"] :doc-topic: ["testing-Policies", "cluster-operators"] :doc-type: \["tutoriel"] :keywords: ["kubewarden", "kubernetes", "cluster operators", "testing"] :sidebar_label:opérateurs de cluster :current-version:{page-origin-branch}
+= test per gli operatori cluster :revdate:2025-05-09 :page-revdate: {revdate} :description: un'introduzione al test delle politiche Kubewarden per gli operatori cluster. :doc-persona: ["kubewarden-policy-Developer"] :doc-topic: ["testing-policies", "cluster-operators"] :doc-type: ["tutorial"] :keywords: ["kubewarden", "kubernetes", "cluster operators", "testing"] :sidebar_label: Cluster Operators :current-version: {page-origin-Branch}
 
-En tant qu'opérateur de cluster Kubernetes, vous devrez tester les stratégies Kubewarden que vous souhaitez utiliser.
+In qualità di operatore cluster Kubernetes, è necessario eseguire test per i criteri Kubewarden che si desidera utilizzare.
 
-Vous aurez des questions comme&nbsp;:
+Avrai domande come:
 
-* Quels sont les paramètres de stratégie corrects pour obtenir le résultat de validation/mutation nécessaire&nbsp;?
-* Comment puis-je être sûr que tout continue à fonctionner comme prévu lorsque je&nbsp;: ** mettre à niveau la politique vers une version plus récente&nbsp;? ** Ajouter/modifier des ressources Kubernetes&nbsp;? ** modifier les paramètres de configuration de la politique&nbsp;? ** et ainsi de suite&nbsp;?
+* Quali sono le impostazioni corrette dei criteri per ottenere il risultato di convalida/mutazione necessario?
+* Come posso essere sicuro che tutto funzioni come previsto quando: ** aggiornare il criterio a una versione più recente? ** Aggiungere/cambiare risorse Kubernetes? ** modificare i parametri di configurazione della policy? ** e così via?
 
-Kubewarden a un utilitaire, https://github.com/kubewarden/kwctl\[`kwctl`], qui permet de tester les règles en dehors de Kubernetes.
+Kubewarden ha un'utilità, https://github.com/kubewarden/kwctl\[`kwctl`], che permette di testare le politiche al di fuori di Kubernetes.
 
-Pour l'utiliser`kwctl`, vous l'appelez avec les entrées suivantes&nbsp;:
+Per utilizzarlo`kwctl`, è necessario richiamarlo con i seguenti input:
 
-. URI de fichier binaire WebAssembly de la stratégie à exécuter. La stratégie Kubewarden peut être chargée à partir de&nbsp;: ** Système de fichiers local `file://`** un serveur HTTP(s) `https://`** un registre OCI `registry://`. . Objet de demande d'admission à tester. Vous le donnez avec l'`--request-path`argument. Utilisez `stdin` en définissant `--request-path` sur `-`. . Les paramètres de stratégie pour l'exécution en tant que JSON en ligne via `--settings-json` drapeau. Ou un fichier JSON, ou YAML, chargé à partir du système de fichiers via `--settings-path`.
+. Un URI del file binario WebAssembly del criterio da eseguire. Il criterio Kubewarden può essere caricato da: ** Filesystem locale `file://`** un server HTTP(S) `https://`** un registro OCI `registry://`. . Oggetto richiesta di ammissione da testare. Lo dai con la `--request-path` discussione. Utilizzare `stdin`impostando `--request-path` su `-`. . Le impostazioni dei criteri per il runtime come JSON inline tramite `--settings-json` flag. O un file JSON, o YAML, caricato dal file system tramite `--settings-path`.
 
-Après le test `kwctl`, imprime l'`ValidationResponse`objet sur la sortie standard.
+Al termine del test `kwctl`, stampa l'`ValidationResponse`oggetto sull'output standard.
 
-Vous pouvez télécharger les binaires pré-construits de `kwctl` https://github.com/kubewarden/kwctl/releases[here].
+È possibile scaricare i file binari predefiniti di `kwctl` https://github.com/kubewarden/kwctl/releases[here].
 
-== Un exemple de test
+== Un esempio di test
 
-Cette section décrit comment tester la règle https://github.com/kubewarden/psp-apparmor[psp-apparmor] avec différentes configurations et différents objets de demande de validation.
+In questa sezione viene descritto come testare il criterio https://github.com/kubewarden/psp-apparmor[psp-apparmor] con configurazioni diverse e oggetti di richiesta di convalida.
 
-=== créer `AdmissionReview` des demandes
+==== Crea `AdmissionReview` richieste
 
-Vous devez créer des fichiers contenant les `AdmissionReview` objets pour tester la stratégie.
+È necessario creare file che contengono gli `AdmissionReview` oggetti per testare il criterio.
 
-Vous pouvez créer un fichier nommé `pod-req-no-specific-apparmor-profile.json` avec le contenu suivant&nbsp;:
+È possibile creare un file con il nome `pod-req-no-specific-apparmor-profile.json`seguente:
 
 .pod-req-no-specific-apparmor-profile.json  
-\[%compressible]
+\[%collapsible]
 ===
 
-\[subs="+attributes",json]
+\[subs="+attributi",json]
 ---
 
 {  
-«&nbsp;uid&nbsp;»&nbsp;: «&nbsp;1299d386-525b-4032-98ae-1949f69f9cfc&nbsp;»,  
-«&nbsp;type&nbsp;»&nbsp;: {  
-"kind"&nbsp;: «&nbsp;POD&nbsp;»,  
-«&nbsp;version&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»  
+"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
+"tipo": {  
+"tipo": "Pod",  
+"versione": "v1"  
 },  
-«&nbsp;objet&nbsp;»&nbsp;: {  
-«&nbsp;métadonnées&nbsp;»&nbsp;: {  
-«&nbsp;nom&nbsp;»&nbsp;: «&nbsp;no-apparmor&nbsp;»  
+"oggetto": {  
+"metadati": {  
+"nome": "no-apparmor"  
 },  
-«&nbsp;spec&nbsp;»&nbsp;: {  
-«&nbsp;containers&nbsp;»&nbsp;: \[  
+"spec": {  
+"contenitori": \[  
 {  
-«&nbsp;image&nbsp;»&nbsp;: «&nbsp;nginx&nbsp;»,  
-«&nbsp;nom&nbsp;»&nbsp;: «&nbsp;nginx&nbsp;»  
-}  
-]  
-} }  
+"immagine": "nginx",  
+"nome": "nginx"  
+  
+  
+ } ] } }  
 ,  
-«&nbsp;opération&nbsp;»&nbsp;: «&nbsp;CREATE&nbsp;»,  
-«&nbsp;requestKind&nbsp;»&nbsp;: {«&nbsp;version&nbsp;»&nbsp;: «&nbsp;v1&nbsp;», «&nbsp;kind&nbsp;»&nbsp;: «&nbsp;POD&nbsp;»},  
-«&nbsp;Infos utilisateur&nbsp;»&nbsp;: {  
-«&nbsp;nom d'utilisateur&nbsp;»&nbsp;: «&nbsp;alice&nbsp;»,  
-«&nbsp;uid&nbsp;»&nbsp;: «&nbsp;alice-uid&nbsp;»,  
-«&nbsp;groupes&nbsp;»&nbsp;: [«&nbsp;system:authenticated&nbsp;»]  
+"operazione": "CREA",  
+"richiedente Kind": {"versione": "v1", "tipo": "Pod"},  
+"userinfo": {  
+"nome utente": "alice",  
+"uid": "alice-uid",  
+"gruppi": ["sistema:autenticato"]  
 } }  
 
 ---
 
-\=======
+\======
 
-Cette demande tente de créer un Pod qui ne spécifie aucun profil AppArmor à utiliser. C'est parce qu'il n'a pas de `annotation` avec la `container.apparmor.security.beta.kubernetes.io/<container-name>` clé.
+Questa richiesta tenta di creare un Pod che non specifica alcun profilo AppArmor da utilizzare. Questo perché non ha un `annotation` con la `container.apparmor.security.beta.kubernetes.io/<container-name>` chiave.
 
-Vous pouvez créer un fichier nommé `pod-req-apparmor-unconfined.json` avec le contenu suivant&nbsp;:
+È possibile creare un file con il nome `pod-req-apparmor-unconfined.json`seguente:
 
-.pod-req-apparmor-unconfiné.json  
-\[%compressible]
+.pod-req-apparmor-unconfined.json  
+\[%comprimibile]
 ===
 
-\[subs="+attributes",json]
+\[subs="+attributi",json]
 ---
 
 {  
-«&nbsp;uid&nbsp;»&nbsp;: «&nbsp;1299d386-525b-4032-98ae-1949f69f9cfc&nbsp;»,  
-«&nbsp;type&nbsp;»&nbsp;: {  
-"kind"&nbsp;: «&nbsp;POD&nbsp;»,  
-«&nbsp;version&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»  
+"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
+"tipo": {  
+"tipo": "Pod",  
+"versione": "v1"  
 },  
-«&nbsp;objet&nbsp;»&nbsp;: {  
-«&nbsp;métadonnées&nbsp;»&nbsp;: {  
-«&nbsp;nom&nbsp;»&nbsp;: «&nbsp;pod privilégié&nbsp;»,  
-«&nbsp;annotations&nbsp;»&nbsp;: {  
-"container.apparmor.security.beta.kubernetes.io/nginx"&nbsp;: «&nbsp;non confiné&nbsp;»  
+"oggetto": {  
+"metadati": {  
+"nome": "pod con privilegi",  
+"annotazioni": {  
+"container.apparmor.security.beta.kubernetes.io/nginx": "non confinato"  
   
  } },  
-«&nbsp;spec&nbsp;»&nbsp;: {  
-«&nbsp;containers&nbsp;»&nbsp;: \[  
+"spec": {  
+"contenitori": \[  
 {  
-«&nbsp;image&nbsp;»&nbsp;: «&nbsp;nginx&nbsp;»,  
-«&nbsp;nom&nbsp;»&nbsp;: «&nbsp;nginx&nbsp;»  
-}  
-]  
-} }  
+"immagine": "nginx",  
+"nome": "nginx"  
+  
+  
+ } ] } }  
 ,  
-«&nbsp;opération&nbsp;»&nbsp;: «&nbsp;CREATE&nbsp;»,  
-«&nbsp;requestKind&nbsp;»&nbsp;: {«&nbsp;version&nbsp;»&nbsp;: «&nbsp;v1&nbsp;», «&nbsp;kind&nbsp;»&nbsp;: «&nbsp;POD&nbsp;»},  
-«&nbsp;Infos utilisateur&nbsp;»&nbsp;: {  
-«&nbsp;nom d'utilisateur&nbsp;»&nbsp;: «&nbsp;alice&nbsp;»,  
-«&nbsp;uid&nbsp;»&nbsp;: «&nbsp;alice-uid&nbsp;»,  
-«&nbsp;groupes&nbsp;»&nbsp;: [«&nbsp;system:authenticated&nbsp;»]  
+"operazione": "CREA",  
+"richiedente Kind": {"versione": "v1", "tipo": "Pod"},  
+"userinfo": {  
+"nome utente": "alice",  
+"uid": "alice-uid",  
+"gruppi": ["sistema:autenticato"]  
 } }  
 
 ---
 
-\=======
+\======
 
-Cette demande tente de créer un Pod avec un conteneur appelé `nginx` Running with the `unconfined` AppArmor profile. Ceci est à des fins de tutoriel uniquement. L'exécution en `unconfined` mode est une mauvaise pratique de sécurité.
+Questa richiesta tenta di creare un Pod con un contenitore denominato `nginx` in esecuzione con il `unconfined`profilo AppArmor. Questo è solo a scopo di esercitazione. L'esecuzione in `unconfined` modalità non è una pratica di sicurezza valida.
 
-Vous pouvez maintenant créer un fichier nommé `pod-req-apparmor-custom.json` avec le contenu suivant&nbsp;:
+Ora è possibile creare un file con il nome `pod-req-apparmor-custom.json`seguente:
 
 .pod-req-apparmor-custom.json  
-\[%compressible]
+\[%comprimibile]
 ===
 
-\[subs="+attributes",json]
+\[subs="+attributi",json]
 ---
 
 {  
-«&nbsp;uid&nbsp;»&nbsp;: «&nbsp;1299d386-525b-4032-98ae-1949f69f9cfc&nbsp;»,  
-«&nbsp;type&nbsp;»&nbsp;: {  
-"kind"&nbsp;: «&nbsp;POD&nbsp;»,  
-«&nbsp;version&nbsp;»&nbsp;: «&nbsp;v1&nbsp;»  
+"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
+"tipo": {  
+"tipo": "Pod",  
+"versione": "v1"  
 },  
-«&nbsp;objet&nbsp;»&nbsp;: {  
-«&nbsp;métadonnées&nbsp;»&nbsp;: {  
-«&nbsp;nom&nbsp;»&nbsp;: «&nbsp;pod privilégié&nbsp;»,  
-«&nbsp;annotations&nbsp;»&nbsp;: {  
-"container.apparmor.security.beta.kubernetes.io/nginx"&nbsp;: «&nbsp;localhost/nginx-custom&nbsp;»  
-}  
-},  
-«&nbsp;spec&nbsp;»&nbsp;: {  
-«&nbsp;containers&nbsp;»&nbsp;: \[  
+"oggetto": {  
+"metadati": {  
+"nome": "pod con privilegi",  
+"annotazioni": {  
+"container.apparmor.security.beta.kubernetes.io/nginx": "localhost/nginx-custom"  
+  
+ } },  
+"spec": {  
+"contenitori": \[  
 {  
-«&nbsp;image&nbsp;»&nbsp;: «&nbsp;nginx&nbsp;»,  
-«&nbsp;nom&nbsp;»&nbsp;: «&nbsp;nginx&nbsp;»  
-}  
-]  
-} }  
+"immagine": "nginx",  
+"nome": "nginx"  
+  
+  
+ } ] } }  
 ,  
-«&nbsp;opération&nbsp;»&nbsp;: «&nbsp;CREATE&nbsp;»,  
-«&nbsp;requestKind&nbsp;»&nbsp;: {«&nbsp;version&nbsp;»&nbsp;: «&nbsp;v1&nbsp;», «&nbsp;kind&nbsp;»&nbsp;: «&nbsp;POD&nbsp;»},  
-«&nbsp;Infos utilisateur&nbsp;»&nbsp;: {  
-«&nbsp;nom d'utilisateur&nbsp;»&nbsp;: «&nbsp;alice&nbsp;»,  
-«&nbsp;uid&nbsp;»&nbsp;: «&nbsp;alice-uid&nbsp;»,  
-«&nbsp;groupes&nbsp;»&nbsp;: [«&nbsp;system:authenticated&nbsp;»]  
+"operazione": "CREA",  
+"richiedente Kind": {"versione": "v1", "tipo": "Pod"},  
+"userinfo": {  
+"nome utente": "alice",  
+"uid": "alice-uid",  
+"gruppi": ["sistema:autenticato"]  
 } }  
 
 ---
 
-\=======
+\======
 
-\[REMARQUE]
+\[NOTA]
 ===
 
-Ce sont tous des objets simplifiés`AdmissionReview`.  
-Seuls les champs pertinents pour notre test de la politique sont utilisés.
+Sono tutti oggetti semplificati`AdmissionReview`.  
+Vengono utilizzati solo i campi rilevanti per il test della politica.
 ===
 
-=== tester la politique
+=== testare il criterio
 
-Vous pouvez maintenant utiliser `kwctl` pour tester la création d'un Pod ne spécifiant pas de profil AppArmor&nbsp;:
+Ora è possibile utilizzare `kwctl` per testare la creazione di un Pod che non specifica un profilo AppArmor:
 
-\[subs="+attributes",console]
+\[subs="+attributi",console]
 ---
 
-$ kwctl exécutez  
+$ kwctl run  
 \--request-path pod-req-no-specific-apparmor-profile.json  
-registry&nbsp;://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
+registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
 | jq
 ---
 
-La règle accepte la demande et produit une sortie comme&nbsp;:
+Il criterio accetta la richiesta e produce output come:
 
-\[subs="+attributes",console]
+\[subs="+attributi",console]
 ---
 
 {  
-«&nbsp;uid&nbsp;»&nbsp;: "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"autorisé"&nbsp;: vrai  
+"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
+"consentito": vero  
 }
 ---
 
-La règle rejette la création d'un pod avec un `unconfined`profil AppArmor&nbsp;:
+Il criterio rifiuta la creazione di un Pod con un `unconfined`profilo AppArmor:
 
-\[subs="+attributes",console]
+\[subs="+attributi",console]
 ---
 
 $ kwctl run  
-\--request-path pod-req-apparmor-unconfiné.json  
-registry&nbsp;://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
+\--request-path pod-req-apparmor-unconfined.json  
+registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
 | jq  
 {  
-"uid"&nbsp;: «&nbsp;1299d386-525b-4032-98ae-1949f69f9cfc&nbsp;»,  
-«&nbsp;autorisé&nbsp;»&nbsp;: faux,  
-«&nbsp;état&nbsp;»&nbsp;: {  
-«&nbsp;message&nbsp;»&nbsp;: «&nbsp;Ces profils AppArmor ne sont pas autorisés&nbsp;: [«&nbsp;non confiné&nbsp;»]&nbsp;»  
+"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
+"consentito": falso,  
+"stato": {  
+"messaggio": "Questi profili AppArmor non sono consentiti: ["non confinato"]"  
 } }  
 
 ---
 
-Dans les deux cas, vous avez exécuté la politique *sans* fournir aucun paramètre. Comme l'indique la documentation https://github.com/kubewarden/psp-apparmor#configuration[policy's], cela empêche l'utilisation de profils autres que les profils par défaut.
+In entrambe le occasioni hai eseguito la politica *senza* fornire alcun tipo di impostazione. Come afferma la documentazione https://github.com/kubewarden/psp-apparmor#configuration[policy's], ciò impedisce l'uso di profili non predefiniti.
 
-Le Pod utilisant un profil personnalisé `nginx`est également rejeté par la stratégie&nbsp;:
+Anche il Pod che utilizza un profilo personalizzato `nginx`viene rifiutato dal criterio:
 
-\[subs="+attributes",console]
+\[subs="+attributi",console]
 ---
 
 $ kwctl run  
 \--request-path pod-req-apparmor-custom.json  
-registry&nbsp;://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
+registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
 | jq  
 {  
-"uid"&nbsp;: «&nbsp;1299d386-525b-4032-98ae-1949f69f9cfc&nbsp;»,  
-«&nbsp;autorisé&nbsp;»&nbsp;: faux,  
-«&nbsp;état&nbsp;»&nbsp;: {  
-«&nbsp;message&nbsp;»&nbsp;: «&nbsp;Ces profils AppArmor ne sont pas autorisés&nbsp;: [«&nbsp;localhost/nginx-custom&nbsp;»]&nbsp;»  
-}  
+"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
+"consentito": falso,  
+"stato": {  
+"messaggio": "Questi profili AppArmor non sono consentiti: ["localhost/nginx-custom"]"  
+} }  
 
 ---
 
-Vous pouvez modifier le comportement par défaut pour permettre l'utilisation des profils AppArmor sélectionnés&nbsp;:
+È possibile modificare il comportamento predefinito, consentendo l'utilizzo dei profili AppArmor selezionati:
 
-\[subs="+attributes",console]
+\[subs="+attributi",console]
 ---
 
 $ kwctl run  
 \--request-path pod-req-apparmor-custom.json  
-\--settings-json '{"allowed_profiles"&nbsp;: ["runtime/default", "localhost/nginx-custom"]}'  
-registry&nbsp;://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
+\--settings-json '{"allowed_profiles": ["runtime/default", "localhost/nginx-custom"]}'  
+registro di sistema://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
 | jq
 ---
 
-La requête réussit maintenant&nbsp;:
+A questo punto, la richiesta riesce:
 
-\[subs="+attributes",console]
+\[subs="+attributi",console]
 ---
 
 {  
-«&nbsp;uid&nbsp;»&nbsp;: "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"autorisé"&nbsp;: vrai  
+"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
+"consentito": vero  
 }
 ---
 
-== automatisation
+== automazione
 
-Vous pouvez automatiser toutes ces étapes en utilisant https://github.com/bats-core/bats-core[bats].
+È possibile automatizzare tutti questi passaggi utilizzando https://github.com/bats-core/bats-core[bats].
 
-Vous pouvez écrire une série de tests et intégrer leur exécution dans vos pipelines ci et CD existants.
+È possibile scrivere una serie di test e integrarne l'esecuzione all'interno delle pipeline ci e CD esistenti.
 
-Les commandes peuvent être «&nbsp;encapsulées&nbsp;» dans un `bats` test&nbsp;:
+I comandi possono essere "inseriti" in un `bats` test:
 
 .A Batstest  
-\[%compressible]
+\[%Collapsible]
 ===
 
 \[,bash]
 ---
 
-@test "tout va bien" { run kwctl run  
+@test "tutto è buono" { run kwctl run  
 \--request-path pod-req-no-specific-apparmor-profile.json  
-register&nbsp;://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4
+registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4
 
-# ceci imprime la sortie lorsque l'une des vérifications ci-dessous échoue
+# questa operazione stampa l'output quando uno dei controlli seguenti non riesce
 
-echo «&nbsp;output = ${output}&nbsp;»
+eco "output = ${output}"
 
-# demande acceptée
+# richiesta accettata
 
-\[ $(expr "$output"&nbsp;: '.*«&nbsp;autorisé&nbsp;» :vrai.*') -ne 0 ] }
+\[ $(expr "$output" : '.*"consentito":vero.*') -ne 0 ] }
 
-@test «&nbsp;rejette&nbsp;» { run kwctl run  
+@test "rifiuta" { run kwctl run  
 \--request-path pod-req-apparmor-custom.json  
-register&nbsp;://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4
+registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4
 
-# ceci imprime la sortie lorsque l'une des vérifications ci-dessous échoue
+# questa operazione stampa l'output quando uno dei controlli seguenti non riesce
 
-echo «&nbsp;output = ${output}&nbsp;»
+eco "output = ${output}"
 
-# demande rejetée
+# richiesta rifiutata
 
-\[ $(expr "$output"&nbsp;: '.*«&nbsp;autorisé&nbsp;» :faux.*') -ne 0 ]  
+\[ $(expr "$output" : '.*"consentito":falso.*') -ne 0 ]  
 }
 ---
 
-\=======
+\======
 
-Si le `bats` code se trouve dans le fichier `e2e.bats`, vous pouvez exécuter le test comme suit&nbsp;:
+Se il `bats` codice è nel file `e2e.bats`, è possibile eseguire il test come segue:
 
-\[subs="+attributes",console]
+\[subs="+attributi",console]
 ---
 
-$ bats e2e.bats ✓ tout est bon ✓ rejeter
+$ bats e2e.bats ✓ tutto è buono ✓ rifiutare
 
-2 tests, 0 échecs
+2 test, 0 errori
 ---
 
-xref:tutorials/writing-Policies/Go/05-e2e-tests.adoc[cette] section contient plus d'informations sur l'écriture de tests de bout en bout pour vos stratégies.
+Xref:tutorials/writing-policies/go/05-e2e-Tests.adoc[this] sezione contiene ulteriori informazioni sulla scrittura di test end-to-end per le policy.
