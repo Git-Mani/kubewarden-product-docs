@@ -1,4 +1,5 @@
 {
+  "externalConfigEnabled" : true
   "projectTemplateConfig": {
     "projectTemplateId": "5f4e526cf3271d4377fb2bb4",
     "targetLanguage": "it-IT",
