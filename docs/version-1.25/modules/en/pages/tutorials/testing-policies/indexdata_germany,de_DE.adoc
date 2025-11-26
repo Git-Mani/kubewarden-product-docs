@@ -1,0 +1,10 @@
+= données de Test des politiques :revdate:2025 9-05-09 :page-revdate: {revdate} :description: UN tutoriel sur le Test des politiques dans Kubewarden. :doc-persona: ["kubewarden-Operator", "kubewarden-Policy-Developer"] :doc-topic: ["Testing-Policies", "Einführung"] :doc-type:\["Tutoriel"]  \[":keywords:kubewarden", "Personen", "Policy Author", «&nbsp;Cluster Operator&nbsp;»] :sidebar_label:Test de règle :current-version:{page-origin-Branch}
+
+== Personas de Test de règles
+
+Traite du Test des politiques Kubewarden. IL y a deux personas intéressés par les politiques de Test&nbsp;:
+
+* *Développeur de politiques*&nbsp;: vous écrivez une politique Kubewarden et vous voulez vous assurer que votre Code se comporte comme vous l'attendez.
+* *Opérateur de Cluster*&nbsp;: vous avez trouvé une stratégie Kubewarden et vous souhaitez Tester et ajuster les paramètres de stratégie avant de la déployer. Vous souhaitez Continuer à Tester ces paramètres dans vos pipelines ci/CD, ainsi que dans d'autres tâches administratives.
+
+Les sections suivantes de la documentation Montrent comment ces personas peuvent Tester les stratégies Kubewarden.
