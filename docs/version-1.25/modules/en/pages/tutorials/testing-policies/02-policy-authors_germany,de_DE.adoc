@@ -1,0 +1,83 @@
+= Testen für Richtlinienautoren :revdate:03.06.2025 :page-revdate:{revdate} :description: eine Einführung in das Testen von Kubewarden Richtlinien für Richtlinienautoren. :doc-persona: ["kubewarden-Policy-Developer"] :doc-topic: \["Testing-Policies", "Policy-Authors":doc-type:]  \["Tutorial"] :keywords: ["kubewarden", "Policy Testing", "Policy Author", "Rust", „Los“, „assemblyscript“, „Entwicklungsumgebung“] :sidebar_label: Policy-Autoren :current-version: {page-origin-Branch}
+
+Kubewarden-Richtlinien sind reguläre Programme, die als WebAssembly (Wasm) kompiliert werden. Wie bei jeder Art von Programm ist eine gute Testabdeckung wichtig.
+
+Richtlinienautoren können ihre bevorzugten Entwicklungsumgebungen verwenden. Sie können vertraute Tools und Testframeworks verwenden, um die Entwicklung zu überprüfen.
+
+Diese Kubewarden Richtlinien sind Beispiele, die in xref:Tutorials/writing-policies/rust/01-intro-rust.adoc[Rust] und xref:Tutorials/writing-policies/go/01-intro-go.adoc[go] geschrieben wurden:
+
+* https://github.com/kubewarden/psp-apparmor\[psp-apparmor]
+* https://github.com/kubewarden/ingress-policy\[ingress-policy]
+
+Sie verfügen über Testsuiten, die Standardtests für ihre Entwicklungsumgebungen verwenden.
+
+Die Policys verwenden GitHub Actions für ihre CI-Pipelines.
+
+== End-to-End-Tests
+
+Sie können auch Tests schreiben, die für die Wasm-Binärdatei ausgeführt werden, die Ihre Richtlinie enthält. Um dies ohne Bereitstellung eines Kubernetes-Clusters zu tun, können Sie die folgenden Tools verwenden:
+
+* https://github.com/bats-core/bats-core[bats]: ist es, Tests zu schreiben und deren Ausführung zu automatisieren.
+* https://github.com/kubewarden/kwctl\[`kwctl`]: Das standardmäßige CLI-Tool von Kubewarden, das Sie bei richtlinienbezogenen Vorgängen unterstützt: Pull, Inspection, kommenate, Push, und laufen.
+
+Zur Verwendung `kwctl run`benötigen Sie Folgendes:
+
+. Die Wasm-Binärdatei-Referenz der auszuführenden Policy. Die Kubewarden-Richtlinie kann geladen werden von: ** Das lokale Dateisystem (`file://`) ** ein HTTP(s)-Server (`https://` ** eine OCI-Registry (`registry://`). . Das zu testende Objekt der Aufnahmeanforderung. Sie geben sie über das `--request-path` Argument oder ein`stdin`, indem Sie auf setzen`--request-path``-`. . Die Policy-Einstellungen für Runtime als Inline-JSON-Via-`--settings-json`Flag. Oder eine JSON- oder YAML-Datei, die über aus dem Dateisystem geladen wurde`--settings-path`.
+
+Nach dem Test `kwctl`druckt das `ValidationResponse` Objekt als Standardausgabe.
+
+So testen Sie `kwctl`die Wasm-Binärdatei der zuvor erwähnten https://github.com/kubewarden/ingress-policy\[`ingress-policy`]:
+
+\[Subs=„+attributes“,Console]
+---
+
+$ curl https://raw.githubusercontent.com/kubewarden/ingress-policy/v0.1.8/test_data/ingress-wildcard.json 2> /dev/null |  
+kwctl Run  
+\--settings-json '{„allowPorts“: [80], „DenyPorts“: [3000]}'  
+\--Request-path -  
+Registry://ghcr.io/kubewarden/policies/ingress:v0.1.8 | jq
+---
+
+Sie können vordefinierte Binärdateien von  https://github.com/kubewarden/kwctl/releases\[here] herunterladen`kwctl`.
+
+Mit `bats`können Sie einen Test schreiben, der diesen Befehl ausführt und nach den erwarteten Ausgaben sucht:
+
+.A Fledermaustest  
+\[%Kollabierbar]
+===
+
+\[,bash]
+---
+
+@test "Alles ist gut" { Run kwctl Run  
+\--Request-path Test_Data/ingress-wildcard.json  
+\--settings-json '{"allowPorts": [80], „DenyPorts“: [3000]}'  
+Ingress-Policy.WASM
+
+# Dadurch wird die Ausgabe gedruckt, wenn eine der folgenden Prüfungen fehlschlägt
+
+Echo „Output = ${output}“
+
+# Validierung der Einstellungen erfolgreich
+
+[\[ "$output“ == *„gültig: Wahr“* ]]
+
+# Anforderung akzeptiert
+
+[\[ "$output“ == *„erlaubt: Wahr“* ]]  
+}
+---
+
+\======
+
+Sie können den Code `e2e.bats`beispielsweise in eine Datei einfügen und dann wie folgt aufrufen`bats`:
+
+\[Subs=„+attributes“,Console]
+---
+
+$ Bats e2e.Bats ✓ alles ist gut
+
+1 Tests, 0 Fehler
+---
+
+xref:Tutorials/writing-policies/GO/05-e2e-Tests.adoc[dieser] Abschnitt der Dokumentation enthält mehr über das Schreiben von End-to-End-Tests Ihrer Richtlinien.
