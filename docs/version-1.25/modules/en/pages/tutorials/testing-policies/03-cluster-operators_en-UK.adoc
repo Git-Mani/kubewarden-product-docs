@@ -1,303 +1,303 @@
-= test per gli operatori cluster :revdate:2025-05-09 :page-revdate: {revdate} :description: un'introduzione al test delle politiche Kubewarden per gli operatori cluster. :doc-persona: ["kubewarden-policy-Developer"] :doc-topic: ["testing-policies", "cluster-operators"] :doc-type: ["tutorial"] :keywords: ["kubewarden", "kubernetes", "cluster operators", "testing"] :sidebar_label: Cluster Operators :current-version: {page-origin-Branch}
+کلسٹر آپریٹرز  کے لئے ٹیسٹنگ 2025-05-09 :page-revdate: :description:کلسٹر آپریٹرز کے :revdate:لئے Kubwarden پالیسیوں کی جانچ کرنے کے لئے ایک تعارف. :doc-persona: \["kubuwarden-policy-developer:doc-topic:"]  \["testing-policies:doc-type:", "tutorial:keywords:"] \["kubwarden", "kubernetes", "کلسٹر  آپریٹرز", "testing"]  کلسٹر آپریٹرز :current-version: \[صفحہ اصل شاخ]:sidebar_label:
 
-In qualità di operatore cluster Kubernetes, è necessario eseguire test per i criteri Kubewarden che si desidera utilizzare.
+Kubernetes کلسٹر آپریٹر کے طور پر، آپ کو Kubwarden پالیسیوں کے لئے جانچ کرنا چاہتے ہیں جو آپ استعمال کرنا چاہتے ہیں.
 
-Avrai domande come:
+آپ کے پاس سوالات ہیں جیسے:
 
-* Quali sono le impostazioni corrette dei criteri per ottenere il risultato di convalida/mutazione necessario?
-* Come posso essere sicuro che tutto funzioni come previsto quando: ** aggiornare il criterio a una versione più recente? ** Aggiungere/cambiare risorse Kubernetes? ** modificare i parametri di configurazione della policy? ** e così via?
+* درست پالیسی کی ترتیبات کیا ہیں جو توثیق / تبدیلی کے نتائج کو حاصل کرنے کے لئے ضروری ہیں؟
+* میں کیسے یقین کر سکتا ہوں کہ سب کچھ میری توقع کے مطابق کام کرتا رہتا ہے جب: کیا آپ اس پالیسی کو کسی نئے ورژن میں اپ گریڈ کرسکتے ہیں؟ (1) کوبرنیٹ وسائل کو شامل کریں / تبدیل کریں؟ (3) پالیسی کے پیرامیٹرز کو تبدیل کریں؟ (اور اس طرح؟)
 
-Kubewarden ha un'utilità, https://github.com/kubewarden/kwctl\[`kwctl`], che permette di testare le politiche al di fuori di Kubernetes.
+Kubwarden ایک افادیت ہے، https://github.com/kubewarden/kwctl\[`kwctl`)، جو Kubernetes کے باہر پالیسیوں کی جانچ کی اجازت دیتا ہے.
 
-Per utilizzarlo`kwctl`, è necessario richiamarlo con i seguenti input:
+اس کا استعمال کرنے کے لئے آپ مندرجہ ذیل آدانوں کے ساتھ اس کا استعمال کرتے ہیں`kwctl`:
 
-. Un URI del file binario WebAssembly del criterio da eseguire. Il criterio Kubewarden può essere caricato da: ** Filesystem locale `file://`** un server HTTP(S) `https://`** un registro OCI `registry://`. . Oggetto richiesta di ammissione da testare. Lo dai con la `--request-path` discussione. Utilizzare `stdin`impostando `--request-path` su `-`. . Le impostazioni dei criteri per il runtime come JSON inline tramite `--settings-json` flag. O un file JSON, o YAML, caricato dal file system tramite `--settings-path`.
+. پالیسی کے لئے ایک بائنری فائل URI. کوبیورڈن کی پالیسی مندرجہ ذیل سے لوڈ ہوسکتی ہے: مقامی filesystem `file://`ایک HTTP (ے) سرور `https://`ایک OCI رجسٹری`registry://`. . ٹیسٹ کے لئے درخواست دینے کے لئے اعتراض. آپ نے دلیل کے ساتھ اس کو پیش کیا ہے۔`--request-path` `stdin`سیٹ کرنے کے لئے استعمال کریں.`--request-path``-` . پرچم کے ذریعے ایک ان لائن JSON کے طور پر رن ٹائم کے لئے پالیسی کی ترتیبات`--settings-json`. یا ایک JSON، یا ایک YAML فائل، کے ذریعے فائل سسٹم سے بھری ہوئی`--settings-path`.
 
-Al termine del test `kwctl`, stampa l'`ValidationResponse`oggetto sull'output standard.
+ٹیسٹ کے بعد`kwctl`، معیاری پیداوار پر اعتراض پرنٹ `ValidationResponse`کریں.
 
-È possibile scaricare i file binari predefiniti di `kwctl` https://github.com/kubewarden/kwctl/releases[here].
+آپ https://github.com/kubewarden/kwctl/releases[here] کے پہلے سے تعمیر شدہ بائنری ڈاؤن لوڈ کرسکتے ہیں`kwctl`.
 
-== Un esempio di test
+1 - آزمائش کی مثال
 
-In questa sezione viene descritto come testare il criterio https://github.com/kubewarden/psp-apparmor[psp-apparmor] con configurazioni diverse e oggetti di richiesta di convalida.
+یہ سیکشن https://github.com/kubewarden/psp-apparmor[psp-apparmor] پالیسی کو مختلف ترتیب اور توثیق کی درخواست اشیاء کے ساتھ ٹیسٹ کرنے کا طریقہ بیان کرتا ہے.
 
-==== Crea `AdmissionReview` richieste
+`AdmissionReview`(1) - طلب کرنا
 
-È necessario creare file che contengono gli `AdmissionReview` oggetti per testare il criterio.
+آپ کو پالیسی کی جانچ کرنے کے لئے اشیاء کے ساتھ فائلوں کو پیدا کرنے کی ضرورت ہے`AdmissionReview`.
 
-È possibile creare un file con il nome `pod-req-no-specific-apparmor-profile.json`seguente:
+آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-no-specific-apparmor-profile.json`:
 
 .pod-req-no-specific-apparmor-profile.json  
-\[%collapsible]
+\[%scrumable]
 ===
 
-\[subs="+attributi",json]
+\[subs کے" اوصاف"، json کے]
 ---
 
-{  
-"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"tipo": {  
-"tipo": "Pod",  
-"versione": "v1"  
-},  
-"oggetto": {  
-"metadati": {  
-"nome": "no-apparmor"  
-},  
-"spec": {  
-"contenitori": \[  
-{  
-"immagine": "nginx",  
-"nome": "nginx"  
+("  
+UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،  
+"قسم":   
+’’قسم‘‘: "POD"،  
+"ورژن": "v1"  
+،  
+"آبجیکٹ": (  
+"میٹا ڈیٹا":   
+"نام": ’’نہیں۔  
+  
+‘‘، ’’سپیک‘‘:   
+"کنٹینرز": (  
+  
+"تصویر": "nginx"،  
+"نام":   
+  
+(’  
   
   
- } ] } }  
-,  
-"operazione": "CREA",  
-"richiedente Kind": {"versione": "v1", "tipo": "Pod"},  
-"userinfo": {  
-"nome utente": "alice",  
-"uid": "alice-uid",  
-"gruppi": ["sistema:autenticato"]  
-} }  
+’آپریشن‘‘): "تخلیق کریں"،  
+"requestKind": ("ورژن": "v1"، "قسم": "pod"،  
+"userInfo": (  
+"صارف نام": "ایلس"،  
+"uid": "Alice-uid"،  
+"گروپس": ["PK"] [Published  
+  
 
 ---
 
-\======
+(متعدی
 
-Questa richiesta tenta di creare un Pod che non specifica alcun profilo AppArmor da utilizzare. Questo perché non ha un `annotation` con la `container.apparmor.security.beta.kubernetes.io/<container-name>` chiave.
+یہ درخواست ایک پوڈ بنانے کی کوشش کرتا ہے جو استعمال کرنے کے لئے کسی بھی ایپ آرمر پروفائل کی وضاحت نہیں کرتا ہے۔ کیونکہ اس کے پاس  `container.apparmor.security.beta.kubernetes.io/<container-name>`چابی نہیں `annotation`ہے۔
 
-È possibile creare un file con il nome `pod-req-apparmor-unconfined.json`seguente:
+آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-apparmor-unconfined.json`:
 
 .pod-req-apparmor-unconfined.json  
-\[%comprimibile]
+[%scrumable]
 ===
 
-\[subs="+attributi",json]
+[subs کے" اوصاف"، json کے]
 ---
 
-{  
-"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"tipo": {  
-"tipo": "Pod",  
-"versione": "v1"  
-},  
-"oggetto": {  
-"metadati": {  
-"nome": "pod con privilegi",  
-"annotazioni": {  
-"container.apparmor.security.beta.kubernetes.io/nginx": "non confinato"  
+("  
+UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،  
+"قسم":   
+’’قسم‘‘: "POD"،  
+"ورژن": "v1"  
+،  
+"آبجیکٹ": (  
+"میٹا ڈیٹا":   
+"نام": "مراعات یافتہ پوڈ"،  
+"تشریحات":   
+(container.apparmor.security.beta.kubernetes.io/nginx":) "غیر محدود")  
   
- } },  
-"spec": {  
-"contenitori": \[  
-{  
-"immagine": "nginx",  
-"nome": "nginx"  
+،  
+"سپیک":   
+"کنٹینرز": (  
+  
+"تصویر": "nginx"،  
+"نام":   
+  
+(’  
   
   
- } ] } }  
-,  
-"operazione": "CREA",  
-"richiedente Kind": {"versione": "v1", "tipo": "Pod"},  
-"userinfo": {  
-"nome utente": "alice",  
-"uid": "alice-uid",  
-"gruppi": ["sistema:autenticato"]  
-} }  
+’آپریشن‘‘): "تخلیق کریں"،  
+"requestKind": ("ورژن": "v1"، "قسم": "pod"،  
+"userInfo": (  
+"صارف نام": "ایلس"،  
+"uid": "Alice-uid"،  
+"گروپس": ["PK"] [Published  
+  
 
 ---
 
-\======
+(متعدی
 
-Questa richiesta tenta di creare un Pod con un contenitore denominato `nginx` in esecuzione con il `unconfined`profilo AppArmor. Questo è solo a scopo di esercitazione. L'esecuzione in `unconfined` modalità non è una pratica di sicurezza valida.
+یہ درخواست اپارمر پروفائل کے ساتھ چل رہا ہے نامی ایک کنٹینر کے ساتھ `unconfined`ایک پوڈ پیدا کرنے کی کوشش کرتا ہے`nginx`. یہ صرف ٹیوٹوریل مقاصد کے لئے ہے. موڈ میں چل رہا ہے `unconfined`ایک خراب سیکورٹی مشق ہے.
 
-Ora è possibile creare un file con il nome `pod-req-apparmor-custom.json`seguente:
+اب آپ مندرجہ ذیل مواد کے ساتھ نام سے ایک فائل بنا سکتے ہیں`pod-req-apparmor-custom.json`:
 
 .pod-req-apparmor-custom.json  
-\[%comprimibile]
+[%scrumable]
 ===
 
-\[subs="+attributi",json]
+[subs کے" اوصاف"، json کے]
 ---
 
-{  
-"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"tipo": {  
-"tipo": "Pod",  
-"versione": "v1"  
-},  
-"oggetto": {  
-"metadati": {  
-"nome": "pod con privilegi",  
-"annotazioni": {  
-"container.apparmor.security.beta.kubernetes.io/nginx": "localhost/nginx-custom"  
+("  
+UID": "1299d386-525b-4032-98ae-1949f69f9cfc"،  
+"قسم":   
+’’قسم‘‘: "POD"،  
+"ورژن": "v1"  
+،  
+"آبجیکٹ": (  
+"میٹا ڈیٹا":   
+"نام": "مراعات یافتہ پوڈ"،  
+"تشریحات":   
+(container.apparmor.security.beta.kubernetes.io/nginx":) "لوکل ہوسٹ/nginx-custom"  
   
- } },  
-"spec": {  
-"contenitori": \[  
-{  
-"immagine": "nginx",  
-"nome": "nginx"  
+،  
+"spec":   
+"کنٹینرز": (  
+  
+"تصویر": "nginx"،  
+"نام":   
+  
+(’  
   
   
- } ] } }  
-,  
-"operazione": "CREA",  
-"richiedente Kind": {"versione": "v1", "tipo": "Pod"},  
-"userinfo": {  
-"nome utente": "alice",  
-"uid": "alice-uid",  
-"gruppi": ["sistema:autenticato"]  
-} }  
+’آپریشن‘‘): "تخلیق کریں"،  
+"requestKind": ("ورژن": "v1"، "قسم": "pod"،  
+"userInfo": (  
+"صارف نام": "ایلس"،  
+"uid": "Alice-uid"،  
+"گروپس": ["PK"] [Published  
+  
 
 ---
 
-\======
+(متعدی
 
-\[NOTA]
+[نوٹ]
 ===
 
-Sono tutti oggetti semplificati`AdmissionReview`.  
-Vengono utilizzati solo i campi rilevanti per il test della politica.
+یہ سب آسان  اشیاء ہیں`AdmissionReview`.  
+صرف ہماری پالیسی کی جانچ سے متعلق شعبوں کا استعمال کیا جاتا ہے.
 ===
 
-=== testare il criterio
+سیاست کا امتحان لیں
 
-Ora è possibile utilizzare `kwctl` per testare la creazione di un Pod che non specifica un profilo AppArmor:
+اب آپ ایک پوڈ کی تخلیق کی جانچ کرنے کے لئے استعمال کر سکتے ہیں `kwctl`جس میں ایک اپلی کیشن پروفائل کی وضاحت نہیں کی جاتی ہے:
 
-\[subs="+attributi",console]
+[subs کے" اوصاف"، کنسول]
 ---
 
-$ kwctl run  
-\--request-path pod-req-no-specific-apparmor-profile.json  
-registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
-| jq
+$ kwctl رن  
+\- درخواست راستہ پوڈ-req-no-specific-apparmor-json  
+رجسٹری://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4  
+jq
 ---
 
-Il criterio accetta la richiesta e produce output come:
+پالیسی درخواست کو قبول کرتی ہے اور پیداوار پیدا کرتی ہے جیسے:
 
-\[subs="+attributi",console]
+[subs کے" اوصاف"، کنسول]
 ---
 
-{  
-"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"consentito": vero  
-}
+("  
+UID": "129d386-525b-4032-98ae-1949f69f9cfc"،  
+"اجازت دی": سچ  
+
 ---
 
-Il criterio rifiuta la creazione di un Pod con un `unconfined`profilo AppArmor:
+اس پالیسی میں ایک ایپ آرمر پروفائل کے ساتھ ایک پوڈ کی تخلیق کو مسترد کیا `unconfined`گیا ہے:
 
-\[subs="+attributi",console]
+[subs کے" اوصاف"، کنسول]
 ---
 
-$ kwctl run  
-\--request-path pod-req-apparmor-unconfined.json  
-registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
+$ kwctl رن  
+ \- درخواست راستہ پوڈ-req-apparmor-uninfined.json  
+رجسٹری://ghcr.io/kubwarden/psp-apparmor:v0.1.4  
+jq  
+  
+ "1299d386-525b-4032-98ae-1949f69f9cfc"،  
+"اجازت": غلط، "  
+حیثیت":   
+"پیغام": ان ایپلی کیشنز پروفائلز کی اجازت نہیں ہے: ["PK"] [Published  
+  
+
+---
+
+دونوں مواقع پر آپ نے کسی بھی قسم کی ترتیب فراہم کیے *بغیر* پالیسی چلائی۔ جیسا کہ https://github.com/kubewarden/psp-apparmor#configuration[policy's دستاویزات بیان کرتی ہیں، اس کے نتیجے میں غیر ڈیفالٹ پروفائلز کے استعمال کو روکنے میں مدد ملتی ہے.
+
+ایک کسٹم  پروفائل کا استعمال کرتے ہوئے پوڈ `nginx`بھی پالیسی کی طرف سے مسترد کر دیا جاتا ہے:
+
+[subs کے" اوصاف"، کنسول]
+---
+
+$ kwctl رن  
+ \- درخواست راستہ پوڈ-req-apparmor-custom.json  
+رجسٹری:///ghcr.io/kubwarden/psp-apparmor:v0.1.4  
 | jq  
-{  
-"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"consentito": falso,  
-"stato": {  
-"messaggio": "Questi profili AppArmor non sono consentiti: ["non confinato"]"  
-} }  
+  
+ "1299d386-525b-4032-98ae-1949f69f9cfc"،  
+"اجازت": غلط، "  
+حیثیت":   
+"پیغام": ان ایپلی کیشنز پروفائلز کی اجازت نہیں ہے: ["Localhost/nginx-custom"]  
+  
 
 ---
 
-In entrambe le occasioni hai eseguito la politica *senza* fornire alcun tipo di impostazione. Come afferma la documentazione https://github.com/kubewarden/psp-apparmor#configuration[policy's], ciò impedisce l'uso di profili non predefiniti.
+آپ ڈیفالٹ رویے کو تبدیل کر سکتے ہیں، منتخب کردہ AppArmor پروفائلز کو استعمال کرنے کی اجازت دیتا ہے:
 
-Anche il Pod che utilizza un profilo personalizzato `nginx`viene rifiutato dal criterio:
-
-\[subs="+attributi",console]
+[subs کے" اوصاف"، کنسول]
 ---
 
-$ kwctl run  
-\--request-path pod-req-apparmor-custom.json  
-registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
-| jq  
-{  
-"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"consentito": falso,  
-"stato": {  
-"messaggio": "Questi profili AppArmor non sono consentiti: ["localhost/nginx-custom"]"  
-} }  
+$ kwctl رن  
+\- درخواست راستہ پوڈ-req-apparmor-custom.json  
+\-- ترتیبات-json 'کی اجازت_profiles': ["runtime/default", "localhost/nginx-custom"]'  
+رجسٹری://ghcr.io/kubwarden/psp-apparmor:v0.1.4  
+jq
+---
+
+اب درخواست کامیاب ہے:
+
+[subs کے" اوصاف"، کنسول]
+---
+
+("  
+UID": "129d386-525b-4032-98ae-1949f69f9cfc"،  
+"اجازت دی": سچ  
 
 ---
 
-È possibile modificare il comportamento predefinito, consentendo l'utilizzo dei profili AppArmor selezionati:
+آٹومیشن
 
-\[subs="+attributi",console]
----
+آپ https://github.com/bats-core/bats-core[bats] کا استعمال کرتے ہوئے ان تمام اقدامات کو خود کار طریقے سے کرسکتے ہیں.
 
-$ kwctl run  
-\--request-path pod-req-apparmor-custom.json  
-\--settings-json '{"allowed_profiles": ["runtime/default", "localhost/nginx-custom"]}'  
-registro di sistema://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4  
-| jq
----
+آپ ٹیسٹ کی ایک سیریز لکھ سکتے ہیں اور اپنے موجودہ سی آئی اور سی ڈی پائپ لائنز کے اندر ان کی عملدرآمد کو ضم کر سکتے ہیں.
 
-A questo punto, la richiesta riesce:
+اس کے علاوہ، آپ کو ایک  ٹیسٹ میں "مکمل طور پر ختم" کیا جا سکتا ہے`bats`:
 
-\[subs="+attributi",console]
----
-
-{  
-"uid": "1299d386-525b-4032-98ae-1949f69f9cfc",  
-"consentito": vero  
-}
----
-
-== automazione
-
-È possibile automatizzare tutti questi passaggi utilizzando https://github.com/bats-core/bats-core[bats].
-
-È possibile scrivere una serie di test e integrarne l'esecuzione all'interno delle pipeline ci e CD esistenti.
-
-I comandi possono essere "inseriti" in un `bats` test:
-
-.A Batstest  
-\[%Collapsible]
+.A بیسٹ  
+[%collable]
 ===
 
-\[,bash]
+[، باش]
 ---
 
-@test "tutto è buono" { run kwctl run  
-\--request-path pod-req-no-specific-apparmor-profile.json  
-registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4
+@test "سب اچھا ہے" (Kwctl رن  
+\- درخواست راستہ پوڈ-req-no-apparmor-file.json  
+رجسٹری://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4
 
-# questa operazione stampa l'output quando uno dei controlli seguenti non riesce
+# یہ پیداوار کو پرنٹ کرتا ہے جب ایک نیچے چیک ناکام ہوجاتا ہے
 
-eco "output = ${output}"
+Echo "پیداوار" - $ [پیداوار]
 
-# richiesta accettata
+# درخواست قبول ہوگئی
 
-\[ $(expr "$output" : '.*"consentito":vero.*') -ne 0 ] }
+[ $ (expr "$پیداوار": '.*اجازت ہے: سچ*') \[0]
 
-@test "rifiuta" { run kwctl run  
-\--request-path pod-req-apparmor-custom.json  
-registry://ghcr.io/kubewarden/policies/psp-apparmor:v0.1.4
+@test "مسترد" (Kwctl رن چلائیں  
+\- درخواست راستہ پوڈ-req-apparmor-custom.json  
+رجسٹری://ghcr.io/kubwarden/پالیسیاں/psp-apparmor:v0.1.4
 
-# questa operazione stampa l'output quando uno dei controlli seguenti non riesce
+# یہ پیداوار کو پرنٹ کرتا ہے جب ایک نیچے چیک ناکام ہوجاتا ہے
 
-eco "output = ${output}"
+Echo "پیداوار" - $ [پیداوار]
 
-# richiesta rifiutata
+# درخواست مسترد ہوگئی
 
-\[ $(expr "$output" : '.*"consentito":falso.*') -ne 0 ]  
-}
+[ $ (expr "$پیداوار": '.*اجازت ہے۔۔۔:false:*') [0]  
+
 ---
 
-\======
+(متعدی
 
-Se il `bats` codice è nel file `e2e.bats`, è possibile eseguire il test come segue:
+اگر `bats`کوڈ فائل میں ہے`e2e.bats`، تو آپ ٹیسٹ کو اس طرح چلا سکتے ہیں:
 
-\[subs="+attributi",console]
+[subs کے" اوصاف"، کنسول]
 ---
 
-$ bats e2e.bats ✓ tutto è buono ✓ rifiutare
+$ bats e2e.bats ✓ سب اچھا ہے ✓ مسترد
 
-2 test, 0 errori
+2 ٹیسٹ، 0 ناکامیاں
 ---
 
-Xref:tutorials/writing-policies/go/05-e2e-Tests.adoc[this] sezione contiene ulteriori informazioni sulla scrittura di test end-to-end per le policy.
+xref: سبق / تحریری پالیسیاں / GO / 05-E2E-Tests.Adoc [یہ] سیکشن آپ کی پالیسیوں کے لئے اختتام سے آخر تک ٹیسٹ لکھنے کے بارے میں مزید ہے.
